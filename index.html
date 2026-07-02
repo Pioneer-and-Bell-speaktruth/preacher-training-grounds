@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preacher Training App</title>
+
+    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
+    <script>
+    fetch("/assets/global.html")
+      .then(r => r.text())
+      .then(html => {
+          const template = document.createElement("div");
+          template.innerHTML = html;
+
+          // Inject CSS + JS
+          document.head.append(...template.querySelectorAll("link, script"));
+
+          // Inject navbar into body
+          const nav = template.querySelector("nav");
+          if (nav) document.body.prepend(nav);
+      });
+    </script>
+</head>
+
+<body class="bg-dark text-light">
+
+    <div class="container mt-4">
+
+        <!-- Intro Section -->
+        <div class="p-4 mb-4 bg-primary text-light rounded">
+            <h1 class="display-5">Welcome to the Preacher Training App</h1>
+            <p class="lead">
+                This platform equips young preachers and Bible study teachers with practical tools 
+                for sermon preparation, Bible study, long-term spiritual growth towards maturity in through the Word of God.
+            </p>
+            <hr class="border-light">
+            <p>
+                Explore the tools in the tabs above to begin building sermons, planning series, studying Scripture, 
+                and strengthening your walk with Christ.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>
