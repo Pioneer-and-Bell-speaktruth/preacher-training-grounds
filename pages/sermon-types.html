@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sermon Types & Training</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 st-container">
+
+        <h1 class="st-header mb-4">Sermon Types & Training</h1>
+
+        <div id="types-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Sermon types (same as React version)
+        // ---------------------------------------------------
+        const types = [
+            { title: "Expository Sermon", screen: "expository.html" },
+            { title: "Textual Sermon", screen: "textual.html" },
+            { title: "Topical Sermon", screen: "topical.html" },
+            { title: "Narrative Sermon", screen: "narrative.html" }
+        ];
+
+        const list = document.getElementById("types-list");
+
+        types.forEach(t => {
+            const card = document.createElement("div");
+            card.classList.add("st-card");
+
+            card.innerHTML = `
+                <div class="st-card-text">${t.title}</div>
+            `;
+
+            card.addEventListener("click", () => {
+                window.location.href = t.screen;
+            });
+
+            list.appendChild(card);
+        });
+    </script>
+</body>
+</html>

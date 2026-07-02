@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verse Detail</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 vd-container">
+
+        <h1 id="vd-ref" class="vd-ref mb-4"></h1>
+
+        <h2 class="vd-label">KJV</h2>
+        <p id="vd-kjv" class="vd-text"></p>
+
+        <h2 class="vd-label">ASV 1901</h2>
+        <p id="vd-asv" class="vd-text"></p>
+
+        <button id="vd-fav-btn" class="btn w-100 py-3 vd-button mt-4">
+            <span class="vd-button-text">Add to Favorites</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Load verse from sessionStorage
+        // ---------------------------------------------------
+        const verse = JSON.parse(sessionStorage.getItem("currentVerse"));
+        const random = sessionStorage.getItem("randomVerse") === "true";
+
+        const refEl = document.getElementById("vd-ref");
+        const kjvEl = document.getElementById("vd-kjv");
+        const asvEl = document.getElementById("vd-asv");
+
+        async function loadRandomVerse() {
+            const files = ["timothy", "titus", "psalms", "proverbs", "ecclesiastes"];
+            const file = files[Math.floor(Math.random() * files.length)];
+
+            const response = await fetch(`../data/${file}.json`);
+            const data = await response.json();
+
+            const v = data[Math.floor(Math.random() * data.length)];
+            displayVerse(v);
+        }
+
+        function displayVerse(v) {
+            refEl.textContent = v.ref;
+            kjvEl.textContent = v.kjv;
+            asvEl.textContent = v.asv;
+
+            // Save the displayed verse so favorites work
+            sessionStorage.setItem("currentVerse", JSON.stringify(v));
+        }
+
+        if (random) {
+            loadRandomVerse();
+        } else {
+            displayVerse(verse);
+        }
+
+        // ---------------------------------------------------
+        // Add to favorites
+        // ---------------------------------------------------
+        document.getElementById("vd-fav-btn").addEventListener("click", () => {
+            const v = JSON.parse(sessionStorage.getItem("currentVerse"));
+            const existing = JSON.parse(localStorage.getItem("favorites")) || [];
+            existing.push(v);
+            localStorage.setItem("favorites", JSON.stringify(existing));
+            alert("Added to favorites!");
+        });
+    </script>
+</body>
+</html>

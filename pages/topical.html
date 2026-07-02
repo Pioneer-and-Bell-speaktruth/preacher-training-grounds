@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topical Sermons</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 topical-container">
+
+        <h1 class="topical-header mb-4">Topical Sermons</h1>
+
+        <h2 class="topical-section-title">What It Is</h2>
+        <p class="topical-text">
+            A topical sermon begins with a subject (e.g., faith, hope, love) and
+            gathers Scriptures that teach on that topic.
+        </p>
+
+        <h2 class="topical-section-title">How to Build One</h2>
+        <p class="topical-text">1. Choose a biblical topic</p>
+        <p class="topical-text">2. Gather Scriptures responsibly</p>
+        <p class="topical-text">3. Organize the teaching logically</p>
+        <p class="topical-text">4. Keep Christ at the center</p>
+
+        <h2 class="topical-section-title">Example Outline</h2>
+        <p class="topical-text">Topic: Encouragement</p>
+        <p class="topical-text">Point 1: God Encourages Us (2 Cor 1:3–4)</p>
+        <p class="topical-text">Point 2: We Encourage One Another (Heb 10:24–25)</p>
+        <p class="topical-text">Point 3: The Scriptures Encourage Us (Rom 15:4)</p>
+
+        <button id="start-topical-btn" class="btn w-100 py-3 topical-button mt-4">
+            <span class="topical-button-text">Start Topical Sermon</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById("start-topical-btn").addEventListener("click", () => {
+            window.location.href = "new-sermon.html";
+        });
+    </script>
+</body>
+</html>

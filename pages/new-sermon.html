@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Sermon</title>
+
+   <link rel="manifest" href="../manifest.json">
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 newsermon-container">
+
+        <h1 class="newsermon-header mb-4">New Sermon</h1>
+
+        <div id="sermon-fields"></div>
+
+        <!-- Tags -->
+        <textarea
+            id="sermon-tags"
+            class="form-control newsermon-input mb-3"
+            placeholder="Tags (comma separated)"
+            style="min-height: 60px;"
+        ></textarea>
+
+        <button id="save-sermon-btn" class="btn w-100 py-3 newsermon-button mt-3">
+            <span class="newsermon-button-text">Save Sermon</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // -----------------------------------------
+        // Sermon fields (same as your React version)
+        // -----------------------------------------
+        const sermon = {
+            title: "",
+            scripturereading: "",
+            bigIdea: "",
+            intro: "",
+            point1: "",
+            point2: "",
+            point3: "",
+            conclusion: ""
+        };
+
+        const container = document.getElementById("sermon-fields");
+
+        // Build dynamic fields
+        Object.keys(sermon).forEach(field => {
+            const textarea = document.createElement("textarea");
+            textarea.classList.add("form-control", "newsermon-input", "mb-3");
+            textarea.style.minHeight = "60px";
+            textarea.placeholder = field.replace(/([A-Z])/g, " $1");
+            textarea.dataset.field = field;
+
+            container.appendChild(textarea);
+        });
+
+        // -----------------------------------------
+        // Save Sermon
+        // -----------------------------------------
+        document.getElementById("save-sermon-btn").addEventListener("click", () => {
+            const updated = {};
+
+            // Collect field values
+            document.querySelectorAll(".newsermon-input").forEach(input => {
+                if (input.dataset.field) {
+                    updated[input.dataset.field] = input.value.trim();
+                }
+            });
+
+            // Tags
+            const tagsRaw = document.getElementById("sermon-tags").value.trim();
+            const tags = tagsRaw.length ? tagsRaw.split(",").map(t => t.trim()) : [];
+
+            const newSermon = {
+                ...updated,
+                tags,
+                date: new Date().toISOString()
+            };
+
+            // Save to LocalStorage
+            const allSermons = JSON.parse(localStorage.getItem("allSermons")) || [];
+            allSermons.push(newSermon);
+            localStorage.setItem("allSermons", JSON.stringify(allSermons));
+
+            // Store for next page
+            sessionStorage.setItem("currentSermon", JSON.stringify(newSermon));
+            sessionStorage.setItem("currentSermonIndex", allSermons.length - 1);
+
+            window.location.href = "my-sermons.html";
+        });
+    </script>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js");
+}
+</script>
+
+</body>
+</html>

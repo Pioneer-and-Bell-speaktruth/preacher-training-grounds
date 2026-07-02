@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Modules</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 tm-container">
+
+        <h1 class="tm-header mb-4">Training Modules</h1>
+
+        <div id="modules-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Training modules (same as React version)
+        // ---------------------------------------------------
+        const modules = [
+            { title: "Hermeneutics Basics", screen: "hermeneutics.html" },
+            { title: "Homiletics Basics", screen: "homiletics.html" },
+            { title: "Preacher's Heart", screen: "preachers-heart.html" },
+            { title: "Greek Word Study", screen: "greek-word-study.html" }
+        ];
+
+        const list = document.getElementById("modules-list");
+
+        modules.forEach(m => {
+            const card = document.createElement("div");
+            card.classList.add("tm-card");
+
+            card.innerHTML = `
+                <div class="tm-card-text">${m.title}</div>
+            `;
+
+            card.addEventListener("click", () => {
+                window.location.href = m.screen;
+            });
+
+            list.appendChild(card);
+        });
+    </script>
+</body>
+</html>

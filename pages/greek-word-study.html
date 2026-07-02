@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greek Word Study</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 greek-container">
+
+        <h1 class="greek-header mb-4">Greek Word Study</h1>
+
+        <!-- Loading State -->
+        <div id="loading" class="greek-loading-container">
+            <p class="greek-loading">Loading Word of the Day...</p>
+        </div>
+
+        <!-- Word of the Day Section -->
+        <div id="word-section" class="greek-section" style="display:none;">
+            <h2 class="greek-title">Word of the Day</h2>
+            <p class="greek-word" id="greek-word"></p>
+            <p class="greek-text" id="greek-meaning"></p>
+            <p class="greek-text" id="greek-strongs"></p>
+            <p class="greek-text" id="greek-notes"></p>
+        </div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // -----------------------------------------
+        // Load Word of the Day (from localStorage)
+        // -----------------------------------------
+        const wordOfTheDay = JSON.parse(localStorage.getItem("wordOfTheDay"));
+
+        const loading = document.getElementById("loading");
+        const section = document.getElementById("word-section");
+
+        if (!wordOfTheDay) {
+            loading.style.display = "block";
+            section.style.display = "none";
+        } else {
+            loading.style.display = "none";
+            section.style.display = "block";
+
+            document.getElementById("greek-word").textContent = wordOfTheDay.word;
+            document.getElementById("greek-meaning").textContent = "Meaning: " + wordOfTheDay.meaning;
+            document.getElementById("greek-strongs").textContent = "Strong’s: " + wordOfTheDay.strengths;
+            document.getElementById("greek-notes").textContent = "Notes: " + wordOfTheDay.notes;
+        }
+    </script>
+</body>
+</html>
