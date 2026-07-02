@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series Detail</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+
+    <script src="../assets/js/jspdf.umd.min.js"></script>
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 sd-container">
+
+        <h1 id="series-title" class="sd-header mb-2"></h1>
+        <p id="series-description" class="sd-description mb-4"></p>
+
+        <button id="add-lesson-btn" class="btn w-100 py-3 sd-button mb-3">
+            <span class="sd-button-text">Add Lesson</span>
+        </button>
+
+        <div id="lessons-list"></div>
+
+        <button id="edit-series-btn" class="btn w-100 py-3 sd-button mb-3">
+            <span class="sd-button-text">Edit Series</span>
+        </button>
+
+        <button id="delete-series-btn" class="btn w-100 py-3 sd-button sd-danger mb-3">
+            <span class="sd-button-text">Delete Series</span>
+        </button>
+
+        <button id="export-pdf-btn" class="btn w-100 py-3 sd-button mb-3">
+            <span class="sd-button-text">Export Series as PDF</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Load series from sessionStorage
+        // ---------------------------------------------------
+        const series = JSON.parse(sessionStorage.getItem("currentSeries"));
+        const index = Number(sessionStorage.getItem("currentSeriesIndex"));
+
+        const allSeries = JSON.parse(localStorage.getItem("allSeries")) || [];
+
+        // ---------------------------------------------------
+        // Populate UI
+        // ---------------------------------------------------
+        document.getElementById("series-title").textContent = series.title;
+        document.getElementById("series-description").textContent = series.description;
+
+        const lessonsList = document.getElementById("lessons-list");
+
+        if (series.lessons.length === 0) {
+            const empty = document.createElement("p");
+            empty.textContent = "No lessons added yet.";
+            empty.style.color = "#555";
+            lessonsList.appendChild(empty);
+        }
+
+        series.lessons.forEach((lesson, i) => {
+            const card = document.createElement("div");
+            card.classList.add("sd-card");
+
+            card.innerHTML = `
+                <div class="sd-title">${lesson.title}</div>
+                <div class="sd-text">${lesson.text.replace(/\n/g, "<br>")}</div>
+
+                <button class="btn w-100 py-2 sd-button mt-3 sd-edit-btn">
+                    <span class="sd-button-text">Edit Lesson</span>
+                </button>
+
+                <button class="btn w-100 py-2 sd-button sd-danger mt-2 sd-delete-btn">
+                    <span class="sd-button-text">Delete Lesson</span>
+                </button>
+            `;
+
+            // Edit lesson
+            card.querySelector(".sd-edit-btn").addEventListener("click", () => {
+                sessionStorage.setItem("currentLesson", JSON.stringify(lesson));
+                sessionStorage.setItem("currentLessonIndex", i);
+                window.location.href = "edit-lesson.html";
+            });
+
+            // Delete lesson
+            card.querySelector(".sd-delete-btn").addEventListener("click", () => {
+                if (confirm("Delete this lesson?")) {
+                    series.lessons.splice(i, 1);
+                    allSeries[index] = series;
+                    localStorage.setItem("allSeries", JSON.stringify(allSeries));
+                    window.location.reload();
+                }
+            });
+
+            lessonsList.appendChild(card);
+        });
+
+        // ---------------------------------------------------
+        // Add Lesson
+        // ---------------------------------------------------
+        document.getElementById("add-lesson-btn").addEventListener("click", () => {
+            window.location.href = "add-lesson.html";
+        });
+
+        // ---------------------------------------------------
+        // Edit Series
+        // ---------------------------------------------------
+        document.getElementById("edit-series-btn").addEventListener("click", () => {
+            window.location.href = "edit-series.html";
+        });
+
+        // ---------------------------------------------------
+        // Delete Series
+        // ---------------------------------------------------
+        document.getElementById("delete-series-btn").addEventListener("click", () => {
+            if (confirm("Delete this entire series? This cannot be undone.")) {
+                allSeries.splice(index, 1);
+                localStorage.setItem("allSeries", JSON.stringify(allSeries));
+                window.location.href = "series-planner.html";
+            }
+        });
+
+        // ---------------------------------------------------
+        // Export Series as PDF
+        // ---------------------------------------------------
+        document.getElementById("export-pdf-btn").addEventListener("click", () => {
+            const { jsPDF } = window.jspdf;
+
+            const doc = new jsPDF({ unit: "pt", format: "letter" });
+
+            const margin = 40;
+            const lineHeight = 16;
+            let y = margin;
+
+            // Title
+            doc.setFontSize(20);
+            doc.text(series.title || "Series", margin, y);
+            y += 30;
+
+            // Description
+            doc.setFontSize(12);
+            const descLines = doc.splitTextToSize(series.description || "", 550);
+            descLines.forEach(line => {
+                if (y > 750) { doc.addPage(); y = margin; }
+                doc.text(line, margin, y);
+                y += lineHeight;
+            });
+
+            y += 20;
+
+            // Lessons
+            series.lessons.forEach((lesson, i) => {
+                if (y > 750) { doc.addPage(); y = margin; }
+
+                doc.setFontSize(16);
+                doc.text(`Lesson ${i + 1}: ${lesson.title}`, margin, y);
+                y += 20;
+
+                doc.setFontSize(12);
+                const lessonLines = doc.splitTextToSize(lesson.text || "", 550);
+                lessonLines.forEach(line => {
+                    if (y > 750) { doc.addPage(); y = margin; }
+                    doc.text(line, margin, y);
+                    y += lineHeight;
+                });
+
+                y += 20;
+            });
+
+            doc.save(`${series.title || "series"}.pdf`);
+        });
+    </script>
+</body>
+</html>

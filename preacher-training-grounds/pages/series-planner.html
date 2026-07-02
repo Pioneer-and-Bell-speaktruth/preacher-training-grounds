@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Series Planner</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 sp-container">
+
+        <h1 class="sp-header mb-4">Series Planner</h1>
+
+        <button id="search-series-btn" class="btn w-100 py-3 sp-button mb-3">
+            <span class="sp-button-text">Search Series</span>
+        </button>
+
+        <button id="new-series-btn" class="btn w-100 py-3 sp-button mb-4">
+            <span class="sp-button-text">Create New Series</span>
+        </button>
+
+        <p id="empty-msg" class="sp-empty">No series created yet.</p>
+
+        <div id="series-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Load series from LocalStorage
+        // ---------------------------------------------------
+        const allSeries = JSON.parse(localStorage.getItem("allSeries")) || [];
+
+        const list = document.getElementById("series-list");
+        const emptyMsg = document.getElementById("empty-msg");
+
+        if (allSeries.length === 0) {
+            emptyMsg.style.display = "block";
+        } else {
+            emptyMsg.style.display = "none";
+
+            allSeries.forEach((s, index) => {
+                const card = document.createElement("div");
+                card.classList.add("sp-card");
+
+                card.innerHTML = `
+                    <div class="sp-title">${s.title || "Untitled Series"}</div>
+                    <div class="sp-date">${new Date(s.created).toLocaleDateString()}</div>
+                `;
+
+                card.addEventListener("click", () => {
+                    sessionStorage.setItem("currentSeries", JSON.stringify(s));
+                    sessionStorage.setItem("currentSeriesIndex", index);
+                    window.location.href = "series-detail.html";
+                });
+
+                list.appendChild(card);
+            });
+        }
+
+        // ---------------------------------------------------
+        // Navigation buttons
+        // ---------------------------------------------------
+        document.getElementById("search-series-btn").addEventListener("click", () => {
+            window.location.href = "search-series.html";
+        });
+
+        document.getElementById("new-series-btn").addEventListener("click", () => {
+            window.location.href = "new-series.html";
+        });
+    </script>
+</body>
+</html>

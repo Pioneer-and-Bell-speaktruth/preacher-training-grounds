@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Sermon</title>
+    
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 edit-sermon-container">
+
+        <h1 class="edit-sermon-header mb-4">Edit Sermon</h1>
+
+        <div id="sermon-fields"></div>
+
+        <button id="save-sermon-btn" class="btn w-100 py-3 edit-sermon-save-btn mt-3">
+            <span class="edit-sermon-button-text">Save Changes</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+
+    <script>
+        // -----------------------------
+        // Load navigation state
+        // -----------------------------
+        const sermon = JSON.parse(sessionStorage.getItem("currentSermon"));
+        const index = JSON.parse(sessionStorage.getItem("currentSermonIndex"));
+
+        // -----------------------------
+        // Build dynamic form fields
+        // -----------------------------
+        const container = document.getElementById("sermon-fields");
+
+        Object.keys(sermon).forEach(field => {
+            const textarea = document.createElement("textarea");
+            textarea.classList.add("form-control", "edit-sermon-input", "mb-3");
+            textarea.style.minHeight = "60px";
+            textarea.placeholder = field.replace(/([A-Z])/g, " $1");
+            textarea.value = sermon[field];
+            textarea.dataset.field = field;
+
+            container.appendChild(textarea);
+        });
+
+        // -----------------------------
+        // Save Changes
+        // -----------------------------
+        document.getElementById("save-sermon-btn").addEventListener("click", () => {
+            const updatedSermon = {};
+
+            document.querySelectorAll(".edit-sermon-input").forEach(input => {
+                updatedSermon[input.dataset.field] = input.value.trim();
+            });
+
+            // Update sermon in storage
+            const allSermons = JSON.parse(localStorage.getItem("allSermons")) || [];
+            allSermons[index] = updatedSermon;
+            localStorage.setItem("allSermons", JSON.stringify(allSermons));
+
+            // Store updated sermon for next page
+            sessionStorage.setItem("currentSermon", JSON.stringify(updatedSermon));
+
+            // Navigate back to sermon detail
+            window.location.href = "sermon-detail.html";
+        });
+    </script>
+</body>
+</html>

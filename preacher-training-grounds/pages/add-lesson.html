@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Lesson</title>
+
+    <!-- Bootstrap CSS -->
+    <script>
+    fetch("/assets/global.html")
+      .then(r => r.text())
+      .then(html => {
+          const template = document.createElement("div");
+          template.innerHTML = html;
+
+          // Inject CSS + JS
+          document.head.append(...template.querySelectorAll("link, script"));
+
+          // Inject navbar into body
+          const nav = template.querySelector("nav");
+          if (nav) document.body.prepend(nav);
+      });
+    </script>
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 add-lesson-container">
+
+        <h1 class="add-lesson-header mb-4">Add Lesson</h1>
+
+        <input
+            id="lesson-title"
+            class="form-control add-lesson-input mb-3"
+            placeholder="Lesson Title"
+        />
+
+        <input
+            id="lesson-text"
+            class="form-control add-lesson-input mb-3"
+            placeholder="Primary Text"
+        />
+
+        <textarea
+            id="lesson-summary"
+            class="form-control add-lesson-input mb-3"
+            style="height: 120px;"
+            placeholder="Summary"
+        ></textarea>
+
+        <button id="save-lesson-btn" class="btn btn-success w-100 py-3 add-lesson-button">
+            <span class="add-lesson-button-text">Save Lesson</span>
+        </button>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Page Logic -->
+    <script src="../assets/js/app.js"></script>
+
+    <script>
+        // Retrieve series + index from navigation state (stored in sessionStorage)
+        const series = JSON.parse(sessionStorage.getItem("currentSeries"));
+        const index = JSON.parse(sessionStorage.getItem("currentSeriesIndex"));
+
+        const saveLessonBtn = document.getElementById("save-lesson-btn");
+
+        saveLessonBtn.addEventListener("click", () => {
+            const title = document.getElementById("lesson-title").value.trim();
+            const text = document.getElementById("lesson-text").value.trim();
+            const summary = document.getElementById("lesson-summary").value.trim();
+
+            if (!title || !text || !summary) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Add lesson to the series
+            const updatedSeries = {
+                ...series,
+                lessons: [...series.lessons, { title, text, summary }]
+            };
+
+            // Save updated series back to storage
+            const allSeries = JSON.parse(localStorage.getItem("allSeries")) || [];
+            allSeries[index] = updatedSeries;
+            localStorage.setItem("allSeries", JSON.stringify(allSeries));
+
+            // Store updated series for next page
+            sessionStorage.setItem("currentSeries", JSON.stringify(updatedSeries));
+            sessionStorage.setItem("currentSeriesIndex", JSON.stringify(index));
+
+            // Navigate to series detail page
+            window.location.href = "series-detail.html";
+        });
+    </script>
+</body>
+</html>

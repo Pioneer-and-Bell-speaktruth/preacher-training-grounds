@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expository Sermons</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 expository-container">
+
+        <h1 class="expository-header mb-4">Expository Sermons</h1>
+
+        <h2 class="expository-section-title">What It Is</h2>
+        <p class="expository-text">
+            An expository sermon explains and applies a passage of Scripture in its
+            context. The main point of the text becomes the main point of the sermon.
+        </p>
+
+        <h2 class="expository-section-title">How to Build One</h2>
+        <p class="expository-text">1. Choose a passage</p>
+        <p class="expository-text">2. Study the context</p>
+        <p class="expository-text">3. Identify the big idea</p>
+        <p class="expository-text">4. Break the text into movements</p>
+        <p class="expository-text">5. Explain → Illustrate → Apply</p>
+
+        <h2 class="expository-section-title">Example Outline</h2>
+        <p class="expository-text">Title: Standing Firm in the Faith</p>
+        <p class="expository-text">Text: 1 Peter 5:6–11</p>
+        <p class="expository-text">Point 1: Humble Yourself (v. 6)</p>
+        <p class="expository-text">Point 2: Cast Your Cares (v. 7)</p>
+        <p class="expository-text">Point 3: Resist the Devil (vv. 8–9)</p>
+
+        <button id="start-btn" class="btn w-100 py-3 expository-button mt-4">
+            <span class="expository-button-text">Start Expository Sermon</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById("start-btn").addEventListener("click", () => {
+            window.location.href = "new-sermon.html";
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Textual Sermons</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 textual-container">
+
+        <h1 class="textual-header mb-4">Textual Sermons</h1>
+
+        <h2 class="textual-section-title">What It Is</h2>
+        <p class="textual-text">
+            A textual sermon takes one verse or a short passage and builds the sermon
+            from key phrases or ideas within that verse.
+        </p>
+
+        <h2 class="textual-section-title">How to Build One</h2>
+        <p class="textual-text">1. Choose a strong, clear verse</p>
+        <p class="textual-text">2. Identify the natural divisions</p>
+        <p class="textual-text">3. Build points from the text itself</p>
+        <p class="textual-text">4. Keep the sermon anchored to the verse</p>
+
+        <h2 class="textual-section-title">Example Outline</h2>
+        <p class="textual-text">Text: Micah 6:8</p>
+        <p class="textual-text">Point 1: Do Justly</p>
+        <p class="textual-text">Point 2: Love Mercy</p>
+        <p class="textual-text">Point 3: Walk Humbly</p>
+
+        <button id="start-textual-btn" class="btn w-100 py-3 textual-button mt-4">
+            <span class="textual-button-text">Start Textual Sermon</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.getElementById("start-textual-btn").addEventListener("click", () => {
+            window.location.href = "new-sermon.html";
+        });
+    </script>
+</body>
+</html>
