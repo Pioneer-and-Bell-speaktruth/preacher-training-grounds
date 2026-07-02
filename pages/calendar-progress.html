@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Calendar</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 calendar-container">
+
+        <h1 class="calendar-header text-center mb-4">Reading Calendar</h1>
+
+        <div id="calendar-grid" class="calendar-grid"></div>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Shared App Logic -->
+    <script src="../assets/js/app.js"></script>
+
+    <script>
+        // Load reading plan progress from localStorage
+        const progress = JSON.parse(localStorage.getItem("readingProgress")) || {};
+
+        // Load current day from storage (or default to 1)
+        const currentDay = parseInt(localStorage.getItem("currentReadingDay")) || 1;
+
+        // Build 1–365 array
+        const days = Array.from({ length: 365 }, (_, i) => i + 1);
+
+        const calendarGrid = document.getElementById("calendar-grid");
+
+        days.forEach(day => {
+            const isDone = progress[day];
+            const isCurrent = day === currentDay;
+
+            const box = document.createElement("div");
+            box.classList.add("day-box");
+
+            if (isDone) box.classList.add("day-done");
+            if (isCurrent) box.classList.add("day-current");
+
+            box.innerHTML = `<span class="day-text">${day}</span>`;
+            calendarGrid.appendChild(box);
+        });
+    </script>
+</body>
+</html>

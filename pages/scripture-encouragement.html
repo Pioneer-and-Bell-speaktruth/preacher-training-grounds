@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scripture Encouragement</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 se-container">
+
+        <h1 class="se-header mb-4">Scripture Encouragement</h1>
+
+        <div id="se-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Categories (same as React version)
+        // ---------------------------------------------------
+        const categories = [
+            { title: "1 & 2 Timothy", file: "timothy" },
+            { title: "Titus", file: "titus" },
+            { title: "Psalms", file: "psalms" },
+            { title: "Proverbs", file: "proverbs" },
+            { title: "Ecclesiastes", file: "ecclesiastes" },
+            { title: "Favorites", file: "favorites" }
+        ];
+
+        const list = document.getElementById("se-list");
+
+        categories.forEach(cat => {
+            const card = document.createElement("div");
+            card.classList.add("se-card");
+
+            card.innerHTML = `
+                <div class="se-card-text">${cat.title}</div>
+            `;
+
+            card.addEventListener("click", () => {
+                sessionStorage.setItem("verseListFile", cat.file);
+                sessionStorage.setItem("verseListTitle", cat.title);
+                window.location.href = "verse-list.html";
+            });
+
+            list.appendChild(card);
+        });
+    </script>
+</body>
+</html>

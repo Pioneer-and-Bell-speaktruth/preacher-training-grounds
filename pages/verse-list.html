@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verse List</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 vl-container">
+
+        <div id="vl-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Load file + title from sessionStorage
+        // ---------------------------------------------------
+        const file = sessionStorage.getItem("verseListFile");
+        const title = sessionStorage.getItem("verseListTitle");
+
+        const list = document.getElementById("vl-list");
+
+        // ---------------------------------------------------
+        // Handle special cases: random & favorites
+        // ---------------------------------------------------
+        if (file === "random") {
+            sessionStorage.setItem("randomVerse", "true");
+            window.location.href = "verse-detail.html";
+        }
+
+        if (file === "favorites") {
+            window.location.href = "favorites.html";
+        }
+
+        // ---------------------------------------------------
+        // Load verses from JSON file
+        // ---------------------------------------------------
+        async function loadVerses() {
+            const response = await fetch(`../data/${file}.json`);
+            const verses = await response.json();
+
+            verses.forEach((v, index) => {
+                const card = document.createElement("div");
+                card.classList.add("vl-card");
+
+                card.innerHTML = `
+                    <div class="vl-ref">${v.ref}</div>
+                    <div class="vl-theme">${v.theme}</div>
+                `;
+
+                card.addEventListener("click", () => {
+                    sessionStorage.setItem("currentVerse", JSON.stringify(v));
+                    sessionStorage.removeItem("randomVerse");
+                    window.location.href = "verse-detail.html";
+                });
+
+                list.appendChild(card);
+            });
+        }
+
+        loadVerses();
+    </script>
+</body>
+</html>

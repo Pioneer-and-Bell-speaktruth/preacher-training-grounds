@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Sermons</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 mysermons-container">
+
+        <h1 class="mysermons-header mb-4">My Sermons</h1>
+
+        <button id="search-btn" class="btn w-100 py-3 mysermons-button mb-4">
+            <span class="mysermons-button-text">Search Sermons</span>
+        </button>
+
+        <p id="empty-msg" class="mysermons-empty">No sermons saved yet.</p>
+
+        <div id="sermon-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // -----------------------------------------
+        // Load sermons from LocalStorage
+        // -----------------------------------------
+        const sermons = JSON.parse(localStorage.getItem("allSermons")) || [];
+
+        const list = document.getElementById("sermon-list");
+        const emptyMsg = document.getElementById("empty-msg");
+
+        if (sermons.length === 0) {
+            emptyMsg.style.display = "block";
+        } else {
+            emptyMsg.style.display = "none";
+
+            sermons.forEach((s, index) => {
+                const card = document.createElement("div");
+                card.classList.add("mysermons-card");
+
+                card.innerHTML = `
+                    <div class="mysermons-title">${s.title || "Untitled Sermon"}</div>
+                    <div class="mysermons-date">${new Date(s.date).toLocaleDateString()}</div>
+                `;
+
+                card.addEventListener("click", () => {
+                    sessionStorage.setItem("currentSermon", JSON.stringify(s));
+                    sessionStorage.setItem("currentSermonIndex", index);
+                    window.location.href = "sermon-detail.html";
+                });
+
+                list.appendChild(card);
+            });
+        }
+
+        // -----------------------------------------
+        // Search button
+        // -----------------------------------------
+        document.getElementById("search-btn").addEventListener("click", () => {
+            window.location.href = "search-sermons.html";
+        });
+    </script>
+</body>
+</html>

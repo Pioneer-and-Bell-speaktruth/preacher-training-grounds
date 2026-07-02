@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Bible Study Plan</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 daily-container">
+
+        <h1 class="daily-header text-center mb-4">Daily Bible Study Plan</h1>
+
+        <!-- Collapsible: Bible Structure Overview -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" data-target="section-bible-structure">
+                <span class="collapsible-title">▶ Understanding the Structure of the Bible</span>
+            </div>
+
+            <div id="section-bible-structure" class="collapsible-content">
+                <p class="daily-text">
+                    Before beginning a one-year study plan, it helps to understand how the
+                    Bible is organized. These sections will guide your reading and deepen
+                    your study.
+                </p>
+
+                <h3 class="daily-subtitle">Old Testament Subsections</h3>
+
+                <h4 class="daily-subheading">The Law (Pentateuch)</h4>
+                <p class="daily-text">Genesis through Deuteronomy — creation, patriarchs, Exodus, and the giving of the Law.</p>
+
+                <h4 class="daily-subheading">Historical Books</h4>
+                <p class="daily-text">Joshua through Esther — Judges, United Kingdom, Divided Kingdom.</p>
+
+                <h4 class="daily-subheading">Wisdom & Poetry</h4>
+                <p class="daily-text">Job, Psalms, Proverbs, Ecclesiastes, Song of Solomon.</p>
+
+                <h4 class="daily-subheading">Major Prophets</h4>
+                <p class="daily-text">Isaiah through Daniel.</p>
+
+                <h4 class="daily-subheading">Minor Prophets</h4>
+                <p class="daily-text">Hosea through Malachi.</p>
+
+                <h3 class="daily-subtitle">New Testament Subsections</h3>
+
+                <h4 class="daily-subheading">The Life and Preaching of Christ</h4>
+                <p class="daily-text">Matthew, Mark, Luke, John.</p>
+
+                <h4 class="daily-subheading">Church History</h4>
+                <p class="daily-text">Acts.</p>
+
+                <h4 class="daily-subheading">The Epistles</h4>
+                <p class="daily-text">Romans through Jude.</p>
+
+                <h4 class="daily-subheading">Prophecy / Apocalyptic</h4>
+                <p class="daily-text">Revelation.</p>
+            </div>
+        </div>
+
+        <!-- Collapsible: Study Plan Overview -->
+        <div class="collapsible-section">
+            <div class="collapsible-header" data-target="section-study-plan">
+                <span class="collapsible-title">▶ How This One-Year Study Plan Works</span>
+            </div>
+
+            <div id="section-study-plan" class="collapsible-content">
+                <h3 class="daily-subtitle">Yearly Structure</h3>
+                <p class="daily-text">• Old Testament + New Testament each day</p>
+                <p class="daily-text">• Psalms and Proverbs woven throughout</p>
+                <p class="daily-text">• Chronological flow where helpful</p>
+
+                <h3 class="daily-subtitle">Study Method</h3>
+                <p class="daily-text">• Observe — What does the text say?</p>
+                <p class="daily-text">• Interpret — What does it mean?</p>
+                <p class="daily-text">• Apply — How should I live this?</p>
+
+                <h3 class="daily-subtitle">Weekly Rhythm</h3>
+                <p class="daily-text">• 6 days of reading and study</p>
+                <p class="daily-text">• 1 day of reflection</p>
+            </div>
+        </div>
+
+        <!-- Today's Reading -->
+        <div class="daily-section">
+            <h2 class="daily-title">Today's Reading (Day <span id="today-number"></span>)</h2>
+            <p class="daily-text">Old Testament: <span id="ot-reading"></span></p>
+            <p class="daily-text">New Testament: <span id="nt-reading"></span></p>
+        </div>
+
+        <!-- Audio Bible -->
+        <div class="daily-section">
+            <h3 class="daily-subtitle">Old Testament Audio</h3>
+            <div id="ot-audio"></div>
+        </div>
+
+        <div class="daily-section">
+            <h3 class="daily-subtitle">New Testament Audio</h3>
+            <div id="nt-audio"></div>
+        </div>
+
+        <!-- Buttons -->
+        <button id="complete-btn" class="btn w-100 py-3 daily-complete-btn mb-3">
+            <span class="daily-complete-text">Mark Day Complete</span>
+        </button>
+
+        <button id="resume-btn" class="btn w-100 py-3 daily-resume-btn mb-3">
+            <span class="daily-resume-text">Resume Reading</span>
+        </button>
+
+        <button id="journal-btn" class="btn w-100 py-3 daily-journal-btn mb-5">
+            <span class="daily-journal-text">Add Notes</span>
+        </button>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/app.js"></script>
+
+    <script>
+        // -----------------------------
+        // Load reading plan data
+        // -----------------------------
+        const readingPlan = JSON.parse(localStorage.getItem("readingPlan")) || [];
+        const currentDay = parseInt(localStorage.getItem("currentReadingDay")) || 1;
+        const todayPlan = readingPlan[currentDay - 1];
+
+        document.getElementById("today-number").textContent = currentDay;
+        document.getElementById("ot-reading").textContent = todayPlan.ot.join(", ");
+        document.getElementById("nt-reading").textContent = todayPlan.nt.join(", ");
+
+        // -----------------------------
+        // Collapsible Sections
+        // -----------------------------
+        document.querySelectorAll(".collapsible-header").forEach(header => {
+            header.addEventListener("click", () => {
+                const target = document.getElementById(header.dataset.target);
+                const title = header.querySelector(".collapsible-title");
+
+                if (target.style.display === "block") {
+                    target.style.display = "none";
+                    title.textContent = "▶ " + title.textContent.slice(2);
+                } else {
+                    target.style.display = "block";
+                    title.textContent = "▼ " + title.textContent.slice(2);
+                }
+            });
+        });
+
+        // -----------------------------
+        // Audio Bible Player
+        // -----------------------------
+        function createAudioPlayer(book, chapter, version) {
+            return `
+                <div class="audio-player mb-3">
+                    <audio controls>
+                        <source src="../audio/${version}/${book}/${chapter}.mp3" type="audio/mpeg">
+                    </audio>
+                    <p class="audio-label">${version} — ${book} ${chapter}</p>
+                </div>
+            `;
+        }
+
+        const otRef = todayPlan.ot[0];
+        const ntRef = todayPlan.nt[0];
+
+        function parseReference(ref) {
+            const parts = ref.split(" ");
+            const book = parts[0];
+            const chapter = parts[1].split("–")[0];
+            return { book, chapter };
+        }
+
+        const { book: otBook, chapter: otChapter } = parseReference(otRef);
+        const { book: ntBook, chapter: ntChapter } = parseReference(ntRef);
+
+        document.getElementById("ot-audio").innerHTML =
+            createAudioPlayer(otBook, otChapter, "KJV") +
+            createAudioPlayer(otBook, otChapter, "ASV");
+
+        document.getElementById("nt-audio").innerHTML =
+            createAudioPlayer(ntBook, ntChapter, "KJV") +
+            createAudioPlayer(ntBook, ntChapter, "ASV");
+
+        // -----------------------------
+        // Buttons
+        // -----------------------------
+        document.getElementById("complete-btn").addEventListener("click", () => {
+            const progress = JSON.parse(localStorage.getItem("readingProgress")) || {};
+            progress[currentDay] = true;
+            localStorage.setItem("readingProgress", JSON.stringify(progress));
+            alert("Day marked complete.");
+        });
+
+        document.getElementById("resume-btn").addEventListener("click", () => {
+            window.location.href = "daily-bible-study.html";
+        });
+
+        document.getElementById("journal-btn").addEventListener("click", () => {
+            sessionStorage.setItem("journalDay", currentDay);
+            window.location.href = "journal.html";
+        });
+    </script>
+</body>
+</html>

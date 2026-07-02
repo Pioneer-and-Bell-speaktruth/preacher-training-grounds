@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psalms for the Preacher</title>
+
+    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-4 psalms-container">
+
+        <h1 class="psalms-header mb-4">Psalms for the Preacher</h1>
+
+        <div id="psalms-list"></div>
+
+    </div>
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ---------------------------------------------------
+        // Load psalms.json (static fetch)
+        // ---------------------------------------------------
+        async function loadPsalms() {
+            const response = await fetch("../data/psalms.json");
+            const verses = await response.json();
+
+            const list = document.getElementById("psalms-list");
+
+            verses.forEach((v, index) => {
+                const card = document.createElement("div");
+                card.classList.add("psalms-card");
+
+                card.innerHTML = `
+                    <div class="psalms-ref">${v.ref}</div>
+                    <div class="psalms-theme">${v.theme}</div>
+                `;
+
+                card.addEventListener("click", () => {
+                    sessionStorage.setItem("currentVerse", JSON.stringify(v));
+                    window.location.href = "verse-detail.html";
+                });
+
+                list.appendChild(card);
+            });
+        }
+
+        loadPsalms();
+    </script>
+</body>
+</html>
