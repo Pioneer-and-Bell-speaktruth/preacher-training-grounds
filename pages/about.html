@@ -6,22 +6,22 @@
     <title>About This Website</title>
 
 
-    <!-- Bootstrap CSS -->
+    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
     <script>
-    fetch("../assets/global.html")
+    fetch("assets/global.html")
       .then(r => r.text())
       .then(html => {
           const template = document.createElement("div");
           template.innerHTML = html;
 
-          // Inject CSS + JS
+          // Inject CSS + JS into <head>
           document.head.append(...template.querySelectorAll("link, script"));
 
-          // Inject navbar into body
+          // Inject navbar into <body>
           const nav = template.querySelector("nav");
           if (nav) document.body.prepend(nav);
-       });
-     </script>
+      });
+    </script>
 </head>
 
 <body class="bg-light">
