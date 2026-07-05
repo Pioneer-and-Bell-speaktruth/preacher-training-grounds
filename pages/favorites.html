@@ -5,8 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Favorite Verses</title>
 
-    <link rel="stylesheet" href="../assets/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
+    <script>
+    fetch("assets/global.html")
+      .then(r => r.text())
+      .then(html => {
+          const template = document.createElement("div");
+          template.innerHTML = html;
+
+          // Inject CSS + JS into <head>
+          document.head.append(...template.querySelectorAll("link, script"));
+
+          // Inject navbar into <body>
+          const nav = template.querySelector("nav");
+          if (nav) document.body.prepend(nav);
+      });
+    </script>
 </head>
 
 <body class="bg-light">
