@@ -1,100 +1,30 @@
-<!-- ============================
-     GLOBAL CSS (Bootstrap Darkly)
-     ============================ -->
-<link rel="stylesheet" href="/assets/dist/css/darkly.min.css">
+<!-- Bootswatch Darkly Theme -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.2/dist/darkly/bootstrap.min.css">
 
-<!-- ============================
-     GLOBAL NAVBAR
-     ============================ -->
-<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/index.html">Preacher Training</a>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+<!-- Global Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="/index.html">Home</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarMain">
-      <ul class="navbar-nav me-auto">
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
 
-        <li class="nav-item">
-          <a class="nav-link" href="/index.html">Home</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/scripture-encouragement.html">Encouragement</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/daily-bible-study.html">Daily Study</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/training-modules.html">Training</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/sermon-builder.html">Sermon Builder</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/series-planner.html">Series Planner</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/wisdom-library.html">Wisdom Library</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" href="/pages/about.html">About</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="/scripture.html">Scripture Encouragement</a></li>
+        <li class="nav-item"><a class="nav-link" href="/daily.html">Daily Bible Study</a></li>
+        <li class="nav-item"><a class="nav-link" href="/greek.html">Greek Word Study</a></li>
+        <li class="nav-item"><a class="nav-link" href="/sermon.html">Sermon Builder</a></li>
+        <li class="nav-item"><a class="nav-link" href="/series.html">Series Planner</a></li>
+        <li class="nav-item"><a class="nav-link" href="/training.html">Training Modules</a></li>
+        <li class="nav-item"><a class="nav-link" href="/wisdom.html">Wisdom Library</a></li>
 
       </ul>
-
-      <form class="d-flex">
-        <input class="form-control me-sm-2" type="search" placeholder="Search">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-      </form>
     </div>
   </div>
 </nav>
-
-<!-- ============================
-     GLOBAL JS (Bootstrap)
-     ============================ -->
-<script src="/assets/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- ============================
-     GLOBAL JS HELPERS
-     ============================ -->
-
-<script>
-// Navigation helper
-function go(page) {
-    window.location.href = page;
-}
-
-// Copy to clipboard helper
-function copyText(text) {
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
-}
-
-// Email helper
-function emailForm(to, subject, body) {
-    window.location.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
-// Download helper
-function downloadText(filename, text) {
-    const blob = new Blob([text], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-</script>
