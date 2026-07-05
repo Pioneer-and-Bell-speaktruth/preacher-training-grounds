@@ -8,7 +8,7 @@
 
     <!-- Bootstrap CSS -->
     <script>
-    fetch("/assets/global.html")
+    fetch("../assets/global.html")
       .then(r => r.text())
       .then(html => {
           const template = document.createElement("div");
@@ -20,8 +20,8 @@
           // Inject navbar into body
           const nav = template.querySelector("nav");
           if (nav) document.body.prepend(nav);
-      });
-    </script>
+       });
+     </script>
 </head>
 
 <body class="bg-light">
