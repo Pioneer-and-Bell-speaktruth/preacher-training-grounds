@@ -4,82 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Training Modules</title>
-
     <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
     <script>
-    fetch('../assets/global.html')
-      .then(r => r.text())
-      .then(html => {
-          const template = document.createElement("div");
-          template.innerHTML = html;
-
-          // Inject CSS + JS into <head>
-          document.head.append(...template.querySelectorAll("link, script"));
-
-          // Inject navbar into <body>
-          const nav = template.querySelector("nav");
-          if (nav) document.body.prepend(nav);
-      });
+        fetch('../assets/global.html')
+            .then(r => r.text())
+            .then(html => {
+                const template = document.createElement("div");
+                template.innerHTML = html;
+                // Inject CSS + JS into <head>
+                document.head.append(...template.querySelectorAll("link, script"));
+                // Inject navbar into <body>
+                const nav = template.querySelector("nav");
+                if (nav) document.body.prepend(nav);
+            });
     </script>
 </head>
-
 <body class="bg-light">
 
     <div class="container py-4 tm-container">
-
         <h1 class="tm-header mb-4">Training Modules</h1>
-
-        <div id="modules-list"></div>
+        
+        <!-- The 4 Buttons -->
+        <div class="container text-center mt-5 mb-4">
+            <a href="https://github.io" class="btn btn-lg btn-secondary">
+                Hermeneutics
+            </a>
+        </div>
+        <div class="container text-center mt-5 mb-4">
+            <a href="https://github.io" class="btn btn-lg btn-secondary">
+                Homiletics
+            </a>
+        </div>
+        <div class="container text-center mt-5 mb-4">
+            <a href="https://github.io" class="btn btn-lg btn-secondary">
+                Preacher's Heart
+            </a>
+        </div>
+        <div class="container text-center mt-5 mb-4">
+            <a href="https://github.io" class="btn btn-lg btn-secondary">
+                Hebrew/Greek Word Study
+            </a>
+        </div>
 
     </div>
 
     <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-    <div class="container text-center mt-5 mb-4">
-        <a href=https:"http://pioneer-and-bell-speaktruth.github.io/preacher-training-grounds/pages/hermeneutics.html"
-           class="btn btn-lg btn-secondary">
-            Hermeneutics
-        </a>
-    </div>
-
-        <div class="container text-center mt-5 mb-4">
-        <a href=https:"http://pioneer-and-bell-speaktruth.github.io/preacher-training-grounds/pages/homiletics.html"
-           class="btn btn-lg btn-secondary">
-            Homiletics
-        </a>
-    </div>
-
-    <div class="container text-center mt-5 mb-4">
-        <a  href=https:"http://pioneer-and-bell-speaktruth.github.io/preacher-training-grounds/pages/preachers-heart.html"
-           class="btn btn-lg btn-secondary">
-            Preacher's Heart
-        </a>
-    </div>
-
-    <div class="container text-center mt-5 mb-4">
-        <a href=https:"http://pioneer-and-bell-speaktruth.github.io/preacher-training-grounds/pages/hebrew-greek-word-study.html"
-           class="btn btn-lg btn-secondary">
-            Hebrew/Greek Word Study
-        </a>
-    </div>
-    </script>
-        const list = document.getElementById("modules-list");
-
-        modules.forEach(m => {
-            const card = document.createElement("div");
-            card.classList.add("tm-card");
-
-            card.innerHTML = `
-                <div class="tm-card-text">${m.title}</div>
-            `;
-
-            card.addEventListener("click", () => {
-                window.location.href = m.screen;
-            });
-
-            list.appendChild(card);
-        });
-    </script>
+    
 </body>
+</html>
 </html>
