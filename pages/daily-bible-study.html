@@ -26,7 +26,19 @@
 <body class="bg-light">
 
     <div class="container py-4 daily-container">
+                <!-- Plan Selection -->
+        <div class="daily-section mb-4">
+            <h2 class="daily-title">Choose Your Reading Plan</h2>
 
+            <select id="plan-selector" class="form-select py-3">
+               <option value="sectional">Sectional Plan</option>
+               <option value="chronological">Chronological Plan</option>
+            </select>
+
+            <p class="daily-text mt-2">
+                Your selection will automatically update today's reading.
+            </p>
+        </div>
         <h1 class="daily-header text-center mb-4">Daily Bible Study Plan</h1>
 
         <!-- Collapsible: Bible Structure Overview -->
@@ -94,19 +106,6 @@
                 <p class="daily-text">• 6 days of reading and study</p>
                 <p class="daily-text">• 1 day of reflection</p>
             </div>
-        </div>
-        <!-- Plan Selection -->
-        <div class="daily-section mb-4">
-            <h2 class="daily-title">Choose Your Reading Plan</h2>
-
-            <select id="plan-selector" class="form-select py-3">
-               <option value="sectional">Sectional Plan</option>
-               <option value="chronological">Chronological Plan</option>
-            </select>
-
-            <p class="daily-text mt-2">
-                Your selection will automatically update today's reading.
-            </p>
         </div>
 
         <!-- Today's Reading -->
