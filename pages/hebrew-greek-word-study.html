@@ -11,9 +11,7 @@
             .then(html => {
                 const template = document.createElement("div");
                 template.innerHTML = html;
-                // Inject CSS + JS into <head>
                 document.head.append(...template.querySelectorAll("link, script"));
-                // Inject navbar into <body>
                 const nav = template.querySelector("nav");
                 if (nav) document.body.prepend(nav);
             });
@@ -24,84 +22,147 @@
     <div class="container py-4 greek-container">
         <h1 class="greek-header mb-4">Hebrew & Greek Word Study</h1>
 
-        <!-- Language Selector -->
-        <div class="mb-4">
-            <label class="form-label fw-bold">Choose Language:</label>
-            <select id="language-selector" class="form-select">
-                <option value="greek">Greek</option>
-                <option value="hebrew">Hebrew</option>
-            </select>
+        <!-- Settings Box -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Choose Language:</label>
+                <select id="language-selector" class="form-select">
+                    <option value="greek">Greek (New Testament)</option>
+                    <option value="hebrew">Hebrew (Old Testament)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Lookup Strong's Number:</label>
+                <div class="input-group">
+                    <input type="text" id="strongs-input" class="form-select" placeholder="e.g., 3056 or 7965">
+                    <button id="search-btn" class="btn btn-primary" type="button">Search</button>
+                </div>
+            </div>
         </div>
 
         <!-- Loading State -->
         <div id="loading" class="greek-loading-container" style="display:none;">
-            <p class="greek-loading">Loading Word of the Day...</p>
+            <p class="greek-loading text-center text-muted">Fetching Concordance Data...</p>
         </div>
 
         <!-- Word of the Day Section -->
         <div id="word-section" class="greek-section">
-            <h2 class="greek-title" id="section-title">Word of the Day</h2>
-            <p class="greek-word" id="study-word"></p>
-            <p class="greek-text" id="study-meaning"></p>
-            <p class="greek-text" id="study-strongs"></p>
-            <p class="greek-text" id="study-notes"></p>
+            <h2 class="greek-title mb-3" id="section-title">Word of the Day</h2>
+            
+            <div class="card p-4 shadow-sm">
+                <p class="display-4 fw-bold text-primary mb-1" id="study-word">---</p>
+                <p class="text-muted fs-5 mb-3" id="study-translit"></p>
+                
+                <hr>
+                
+                <p class="greek-text"><strong>Strong’s Reference:</strong> <span id="study-strongs" class="badge bg-secondary fs-6">---</span></p>
+                <p class="greek-text"><strong>Definition / Meaning:</strong></p>
+                <p id="study-meaning" class="lh-base fs-5 ps-3 border-start border-3 border-primary">Select a language or enter a Strong's number above.</p>
+                
+                <p class="greek-text mt-3"><strong>Derivation / Notes:</strong></p>
+                <p id="study-notes" class="text-muted italic ps-3">---</p>
+            </div>
         </div>
     </div>
 
     <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // -----------------------------------------
-        // Fallback data if nothing is saved in localStorage
-        // -----------------------------------------
-        const defaultGreek = {
-            word: "Logos (Λόγος)",
-            meaning: "Word, reason, or principle.",
-            strongs: "Strong's G3056",
-            notes: "Often refers to the divine reason or word of God."
-        };
-
-        const defaultHebrew = {
-            word: "Shalom (שָׁלוֹם)",
-            meaning: "Peace, completeness, soundness, welfare.",
-            strongs: "Strong's H7965",
-            notes: "More than just the absence of war; implies wholeness."
-        };
-
+        // DOM Elements
         const loading = document.getElementById("loading");
         const section = document.getElementById("word-section");
         const selector = document.getElementById("language-selector");
+        const strongsInput = document.getElementById("strongs-input");
+        const searchBtn = document.getElementById("search-btn");
 
-        // Default language
+        // Global Cache to prevent re-fetching the JSON files multiple times
+        let cachedDictionaries = { greek: null, hebrew: null };
+
+        // Default layout init
         const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
         selector.value = savedLanguage;
 
-        function loadWord() {
-            const lang = selector.value;
-            localStorage.setItem("studyLanguage", lang);
+        // Fetch dictionary configuration dynamically
+        async function getDictionary(lang) {
+            if (cachedDictionaries[lang]) return cachedDictionaries[lang];
 
-            // Fetch from localStorage OR fallback to default data
-            const storedGreek = JSON.parse(localStorage.getItem("greekWordOfTheDay"));
-            const storedHebrew = JSON.parse(localStorage.getItem("hebrewWordOfTheDay"));
+            loading.style.display = "block";
+            const filename = lang === "greek" ? "strongs-greek-dictionary.json" : "strongs-hebrew-dictionary.json";
             
-            const wordData = lang === "greek" ? (storedGreek || defaultGreek) : (storedHebrew || defaultHebrew);
-
-            // Update UI elements
-            document.getElementById("section-title").textContent = lang === "greek" ? "Greek Word of the Day" : "Hebrew Word of the Day";
-            document.getElementById("study-word").textContent = wordData.word;
-            document.getElementById("study-meaning").textContent = "Meaning: " + wordData.meaning;
-            document.getElementById("study-strongs").textContent = "Strong’s: " + wordData.strongs;
-            document.getElementById("study-notes").textContent = "Notes: " + wordData.notes;
-
-            // Show section, hide loading
-            loading.style.display = "none";
-            section.style.display = "block";
+            try {
+                // Adjust path depending on your folder layout (assuming it matches your assets path structure)
+                const response = await fetch(`../assets/${filename}`);
+                if (!response.ok) throw new Error("File not found");
+                const data = await response.json();
+                cachedDictionaries[lang] = data;
+                return data;
+            } catch (err) {
+                console.error("Error loading concordance data:", err);
+                alert(`Failed to load ${lang} dictionary file. Ensure it exists in your assets folder.`);
+                return null;
+            } finally {
+                loading.style.display = "none";
+            }
         }
 
-        // Load initial word
-        loadWord();
+        // Render the retrieved payload to the UI
+        function updateUI(lang, number, entry) {
+            if (!entry) {
+                alert(`Strong's number ${number} not found in the ${lang} lexicon.`);
+                return;
+            }
 
-        // Change language when selector is used
-        selector.addEventListener("change", loadWord);
+            document.getElementById("section-title").textContent = lang === "greek" ? "Greek Lexicon Lookup" : "Hebrew Lexicon Lookup";
+            
+            // Handle variations in JSON formatting between standard OpenScriptures Greek and Hebrew structures
+            const word = entry.lemma || entry.word || "Unknown";
+            const translit = entry.translit || entry.transliteration || "";
+            const definition = entry.strongs_def || entry.definition || entry.meaning || "No definition available.";
+            const derivation = entry.derivation || entry.notes || "N/A";
+
+            document.getElementById("study-word").textContent = word;
+            document.getElementById("study-translit").textContent = translit ? `[${translit}]` : "";
+            document.getElementById("study-strongs").textContent = `${lang.charAt(0).toUpperCase()}${number}`;
+            document.getElementById("study-meaning").textContent = definition;
+            document.getElementById("study-notes").textContent = derivation;
+        }
+
+        // Action: Fetch word by direct entry number lookup
+        async function executeLookup(numberInput) {
+            // Clean formatting (Strip prefixes like 'G' or 'H' if the user types them)
+            const cleanNumber = numberInput.replace(/\D/g, "");
+            if (!cleanNumber) return;
+
+            const lang = selector.value;
+            const dict = await getDictionary(lang);
+            if (!dict) return;
+
+            // OpenScriptures formats Greek keys as absolute identifiers like "G3056"
+            // Adjust index checks dynamically to capture varying object keys safely
+            const lookupKey = lang === "greek" ? `G${cleanNumber}` : cleanNumber;
+            const entry = dict[lookupKey] || dict[cleanNumber];
+
+            updateUI(lang, cleanNumber, entry);
+        }
+
+        // Trigger on language dropdown modification
+        async function handleLanguageChange() {
+            const lang = selector.value;
+            localStorage.setItem("studyLanguage", lang);
+            
+            // Load a default reference entry when swapping tabs
+            const defaultNumber = lang === "greek" ? "3056" : "7965";
+            executeLookup(defaultNumber);
+        }
+
+        // Event Listeners
+        selector.addEventListener("change", handleLanguageChange);
+        searchBtn.addEventListener("click", () => executeLookup(strongsInput.value));
+        strongsInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") executeLookup(strongsInput.value);
+        });
+
+        // Initialize view on load
+        handleLanguageChange();
     </script>
 </body>
 </html>
