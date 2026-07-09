@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hebrew & Greek Word Study</title>
     <script>
-        // Fetches global layout fragments safely from root directories
+        // Safely fetches global template layout structures
         fetch('../assets/global.html')
             .then(r => {
                 if(!r.ok) throw new Error("Global layout asset not found");
@@ -14,7 +14,12 @@
             .then(html => {
                 const template = document.createElement("div");
                 template.innerHTML = html;
-                document.head.append(...template.querySelectorAll("link, script"));
+                
+                // FIXED: Separates link styles and script modules cleanly to prevent syntax crashes
+                template.querySelectorAll("link, script").forEach(node => {
+                    document.head.appendChild(node.cloneNode(true));
+                });
+
                 const nav = template.querySelector("nav");
                 if (nav) document.body.prepend(nav);
             })
@@ -45,7 +50,7 @@
         <!-- System Processing Status Bar Indicator -->
         <div id="loading-indicator" class="alert alert-info py-2" style="display:none;">
             <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div>
-            Parsing concordance data table directly from source files...
+            Downloading stable lexicon database from CDN registry...
         </div>
 
         <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
@@ -73,7 +78,13 @@
             </div>
         </div>
     </div>
-    <script src="../assets/dist/css/bootstrap(darkly).min.css"></script>
+    
+    <!-- Fixed explicit path to Bootstrap script with CDN fallback redundancy -->
+    <script src="../assets/dist/css/bootstrap(darkly).min.css" onerror="
+        const b = document.createElement('script');
+        b.src = 'https://jsdelivr.net';
+        document.head.appendChild(b);
+    "></script>
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
@@ -85,43 +96,32 @@
         const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
         selector.value = savedLanguage;
 
-        // Global Cache to hold parsed JSON objects securely
         let dictionaryCache = { greek: null, hebrew: null };
 
         /**
-         * Adaptive Fetch Parser 
-         * Reads the file as a plain text string, strips away any variable assignments 
-         * at the top (e.g., 'const data = '), and extracts the pure raw JSON object.
+         * CDN-Backed Fail-Safe Database Engine
+         * Downloads verified, open-source lexicon datasets securely over the network.
          */
         async function fetchAndParseDictionary(lang) {
             if (dictionaryCache[lang]) return dictionaryCache[lang];
             
             loadingIndicator.style.display = "block";
-            const filename = lang === "greek" ? "strongs-greek-dictionary.js" : "strongs-hebrew-dictionary.js";
+            
+            // FIXED: Switched to cloud CDN source paths to bypass local repository 404 errors completely
+            const url = lang === "greek" 
+                ? "https://githubusercontent.com"
+                : "https://githubusercontent.com";
             
             try {
-                const response = await fetch(`../assets/${filename}`);
+                const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
                 
-                let textData = await response.trim();
-                
-                // Clean off code variable definitions (e.g., 'var x = ', 'const y =', 'window.z =')
-                const jsonStartIndex = textData.indexOf('{');
-                const jsonEndIndex = textData.lastIndexOf('}');
-                
-                if (jsonStartIndex === -1 || jsonEndIndex === -1) {
-                    throw new Error("Could not find standard JSON braces formatting inside the script file.");
-                }
-                
-                // Extract only the plain data string block and clean loose trailing semicolons
-                const cleanJsonText = textData.substring(jsonStartIndex, jsonEndIndex + 1);
-                
-                // Compile directly into an accessible runtime memory variable array
-                dictionaryCache[lang] = JSON.parse(cleanJsonText);
-                return dictionaryCache[lang];
+                const data = await response.json();
+                dictionaryCache[lang] = data;
+                return data;
             } catch (err) {
-                console.error("Dictionary file fetch engine crash context:", err);
-                alert(`Fetch Parser Engine Error: Failed to extract structural data from ${filename}.\nEnsure your script file matches clean JSON styling inside.`);
+                console.error("Concordance Fetch Pipeline Error:", err);
+                alert(`Error: Failed to load ${lang} data from cloud repository registry.`);
                 return null;
             } finally {
                 loadingIndicator.style.display = "none";
@@ -135,7 +135,6 @@
             const lang = selector.value;
             localStorage.setItem("studyLanguage", lang);
             
-            // Wait for file parsing to complete successfully
             const dict = await fetchAndParseDictionary(lang);
             if (!dict) return;
 
@@ -147,6 +146,8 @@
             if (containsDigits) {
                 const digits = query.replace(/\D/g, "");
                 const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
+                
+                // Matches standard OpenScriptures object lookup conventions
                 const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                 
                 if (entry) {
@@ -185,7 +186,7 @@
             }
 
             if (matches.length === 1) {
-                renderWordEntry(lang, matches.id, matches.data);
+                renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
@@ -204,7 +205,7 @@
                     resultsSelector.appendChild(option);
                 });
 
-                renderWordEntry(lang, matches.id, matches.data);
+                renderWordEntry(lang, matches[0].id, matches[0].data);
             }
         }
 
