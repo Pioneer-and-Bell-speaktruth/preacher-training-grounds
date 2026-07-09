@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <!-- Multi-Match Word Selector Row (Only displays when an English word search returns multiple results) -->
+        <!-- Multi-Match Word Selector Row (Displays when text search returns multiple entries) -->
         <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
             <label class="form-label fw-bold text-dark"><span class="badge bg-warning text-dark me-2" id="match-count">0</span> Multiple Dictionary Matches Found. Select Entry:</label>
             <select id="results-selector" class="form-select border-warning"></select>
@@ -91,13 +91,13 @@
 
         /**
          * Resolves the dictionary array/object based on your loaded external JS structures.
-         * Tries various open-source variable declarations commonly used in JS conversions.
+         * Checks multiple common variable names used by Open Scriptures JS dumps.
          */
         function getLoadedDictionary(lang) {
             if (lang === "greek") {
-                return window.strongsGreekDictionary || window.strongsGreek || window.greekDictionary || window.greekStrongs;
+                return window.strongsGreekDictionary || window.strongsGreek || window.greekDictionary || window.greekStrongs || window.strongsGreekDict;
             } else {
-                return window.strongsHebrewDictionary || window.strongsHebrew || window.hebrewDictionary || window.hebrewStrongs;
+                return window.strongsHebrewDictionary || window.strongsHebrew || window.hebrewDictionary || window.hebrewStrongs || window.strongsHebrewDict;
             }
         }
 
@@ -113,70 +113,67 @@
             
             const dict = getLoadedDictionary(lang);
             if (!dict) {
-                alert(`Error: Dictionary object could not be found globally. Verify your script tags reference the correct file paths.`);
+                alert(`CRITICAL ERROR: Dictionary data file loaded, but the variable inside could not be found.\n\nOpen your .js file in a text editor and check what the variable name at the very top is!`);
                 return;
             }
 
-            // Hide the choice panel from previous searches
+            // Reset UI view containers
             resultsContainer.style.display = "none";
             resultsSelector.innerHTML = "";
 
-            // Check if user is searching for a Strong's number code
+            // Determine look-up path (Strong's Number vs English Text Scan)
             const containsDigits = /\d+/.test(query);
 
             if (containsDigits) {
-                // Strong's Number Branch
                 const digits = query.replace(/\D/g, "");
                 const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
                 
-                // Fallbacks handle dictionary files indexed by structural prefix (e.g. "G3056") vs naked IDs (e.g. "3056")
+                // Try both prefix key variants ("G3056" vs "3056")
                 const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                 
                 if (entry) {
                     renderWordEntry(lang, digits, entry);
                 } else {
-                    alert(`Strong's reference number [${lookupKey}] was not found in the ${lang} database.`);
+                    alert(`Strong's number [${lookupKey}] was not found in the database.`);
                 }
             } else {
-                // KJV Word Search Branch
                 searchByEnglishWord(lang, query, dict);
             }
         }
 
         /**
-         * Deep scans definitions, lemmas, and derivations for partial text matches
+         * Deep scans definitions dynamically, ignoring key name structural variations
          */
         function searchByEnglishWord(lang, englishWord, dict) {
             const lowerWord = englishWord.toLowerCase();
             const matches = [];
 
-            // Iterate across the entire structured dataset
             for (const key in dict) {
                 if (!dict.hasOwnProperty(key)) continue;
                 const entry = dict[key];
-                
-                // Fallbacks handle string fields inside standard OpenScriptures structures
-                const definition = (entry.strongs_def || entry.definition || entry.meaning || "").toLowerCase();
-                const derivation = (entry.derivation || entry.notes || "").toLowerCase();
-                const kjvWords = (entry.kjv_def || "").toLowerCase();
+                if (!entry) continue;
 
-                if (definition.includes(lowerWord) || derivation.includes(lowerWord) || kjvWords.includes(lowerWord)) {
-                    // Extract numerical index out of string key structural ID
+                // Combine all available string content fields dynamically into one block to scan
+                const searchableText = Object.values(entry)
+                    .filter(val => typeof val === 'string')
+                    .join(' ')
+                    .toLowerCase();
+
+                if (searchableText.includes(lowerWord)) {
                     const numericKey = key.replace(/\D/g, "");
                     matches.push({ id: numericKey, data: entry });
                 }
             }
 
             if (matches.length === 0) {
-                alert(`No dictionary items found matching the KJV word choice "${englishWord}".`);
+                alert(`No lexicon items found matching the KJV word "${englishWord}".`);
                 return;
             }
 
             if (matches.length === 1) {
-                // Single exact word match found; display right away
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
-                // Multiple matching results found. Render interactive user refinement dropdown
+                // Populate drop-down list if multiple root hits occur
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
 
@@ -184,27 +181,235 @@
                     const option = document.createElement("option");
                     option.value = match.id;
                     
-                    const wordText = match.data.lemma || match.data.word || "Unknown";
-                    const snippet = match.data.strongs_def || match.data.definition || match.data.meaning || "";
-                    const shortSnippet = snippet.substring(0, 60) + "...";
+                    // Adaptive property mapper fallbacks
+                    const wordText = match.data.lemma || match.data.word || match.data.text || "Unknown";
+                    const rawDef = match.data.strongs_def || match.data.definition || match.data.meaning || match.data.kjv_def || "";
+                    const shortSnippet = rawDef.substring(0, 70) + "...";
                     
                     const prefix = lang === "greek" ? "G" : "H";
                     option.textContent = `[${prefix}${match.id}] ${wordText} — ${shortSnippet}`;
-                    
-                    // Attach structural reference index
                     option.dataset.entryPayload = JSON.stringify(match.data);
                     resultsSelector.appendChild(option);
                 });
 
-                // Display the first matching item in list by default
+                // Auto-render primary array result match
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             }
         }
 
         /**
-         * Outputs structural data parsing mapping to UI DOM
+         * Maps extracted properties to UI layout engine safely
          */
         function renderWordEntry(lang, numberString, entry) {
             const prefix = lang === "greek" ? "G" : "H";
             document.getElementById("section-title").textContent = lang === "greek" ? "Greek Lexicon View" : "Hebrew Lexicon View";
             
+            // Flexible fallback assignments checking common compilation properties
+            const word = entry.lemma || entry.word || entry.text || "N/A";
+            const translit = entry.translit || entry.transliteration || entry.pronunciation || "";
+            const definition = entry.strongs_def || entry.definition || entry.meaning || entry.kjv_def || "No text definition mapped.";
+        // Dropdown selection change handler
+        resultsSelector.addEventListener("change", function() {
+            const selectedOption = resultsSelector.options[resultsSelector.selectedIndex];
+            if (selectedOption && selectedOption.dataset.entryPayload) {
+                const entryData = JSON.parse(selectedOption.dataset.entryPayload);
+                renderWordEntry(selector.value, selectedOption.value, entryData);
+            }
+        });
+
+        // Reset layout on configuration target changes
+        function handleLanguageReset() {
+            resultsContainer.style.display = "none";
+            resultsSelector.innerHTML = "";
+            const lang = selector.value;
+            localStorage.setItem("studyLanguage", lang);
+            
+            // Populate standard defaults based on active context targets
+            strongsInput.value = lang === "greek" ? "3056" : "7965";
+            performSearch();
+        }
+
+        // Global Event Wiring
+        selector.addEventListener("change", handleLanguageReset);
+        searchBtn.addEventListener("click", performSearch);
+        strongsInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") performSearch();
+        });
+
+        // Init Call setup execution pass
+        setTimeout(handleLanguageReset, 200); 
+    </script>
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // DOM Handles
+    const selector = document.getElementById("language-selector");
+    const strongsInput = document.getElementById("strongs-input");
+    const searchBtn = document.getElementById("search-btn");
+    const resultsContainer = document.getElementById("results-selector-container");
+    const resultsSelector = document.getElementById("results-selector");
+
+    // Initialization 
+    const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
+    selector.value = savedLanguage;
+
+    /**
+     * Resolves the dictionary array/object based on your loaded external JS structures.
+     * Checks multiple common variable names used by Open Scriptures JS dumps.
+     */
+    function getLoadedDictionary(lang) {
+        if (lang === "greek") {
+            return window.strongsGreekDictionary || window.strongsGreek || window.greekDictionary || window.greekStrongs || window.strongsGreekDict;
+        } else {
+            return window.strongsHebrewDictionary || window.strongsHebrew || window.hebrewDictionary || window.hebrewStrongs || window.strongsHebrewDict;
+        }
+    }
+
+    /**
+     * Main Search Orchestrator 
+     */
+    function performSearch() {
+        const query = strongsInput.value.trim();
+        if (!query) return;
+
+        const lang = selector.value;
+        localStorage.setItem("studyLanguage", lang);
+        
+        const dict = getLoadedDictionary(lang);
+        if (!dict) {
+            alert(`CRITICAL ERROR: Dictionary data file loaded, but the variable inside could not be found.\n\nOpen your .js file in a text editor and check what the variable name at the very top is!`);
+            return;
+        }
+
+        // Reset UI view containers
+        resultsContainer.style.display = "none";
+        resultsSelector.innerHTML = "";
+
+        // Determine look-up path (Strong's Number vs English Text Scan)
+        const containsDigits = /\d+/.test(query);
+
+        if (containsDigits) {
+            const digits = query.replace(/\D/g, "");
+            const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
+            
+            // Try both prefix key variants ("G3056" vs "3056")
+            const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
+            
+            if (entry) {
+                renderWordEntry(lang, digits, entry);
+            } else {
+                alert(`Strong's number [${lookupKey}] was not found in the database.`);
+            }
+        } else {
+            searchByEnglishWord(lang, query, dict);
+        }
+    }
+
+    /**
+     * Deep scans definitions dynamically, ignoring key name structural variations
+     */
+    function searchByEnglishWord(lang, englishWord, dict) {
+        const lowerWord = englishWord.toLowerCase();
+        const matches = [];
+
+        for (const key in dict) {
+            if (!dict.hasOwnProperty(key)) continue;
+            const entry = dict[key];
+            if (!entry) continue;
+
+            // Combine all available string content fields dynamically into one block to scan
+            const searchableText = Object.values(entry)
+                .filter(val => typeof val === 'string')
+                .join(' ')
+                .toLowerCase();
+
+            if (searchableText.includes(lowerWord)) {
+                const numericKey = key.replace(/\D/g, "");
+                matches.push({ id: numericKey, data: entry });
+            }
+        }
+
+        if (matches.length === 0) {
+            alert(`No lexicon items found matching the KJV word "${englishWord}".`);
+            return;
+        }
+
+        if (matches.length === 1) {
+            renderWordEntry(lang, matches[0].id, matches[0].data);
+        } else {
+            // Populate drop-down list if multiple root hits occur
+            document.getElementById("match-count").textContent = matches.length;
+            resultsContainer.style.display = "block";
+
+            matches.forEach(match => {
+                const option = document.createElement("option");
+                option.value = match.id;
+                
+                // Adaptive property mapper fallbacks
+                const wordText = match.data.lemma || match.data.word || match.data.text || "Unknown";
+                const rawDef = match.data.strongs_def || match.data.definition || match.data.meaning || match.data.kjv_def || "";
+                const shortSnippet = rawDef.substring(0, 70) + "...";
+                
+                const prefix = lang === "greek" ? "G" : "H";
+                option.textContent = `[${prefix}${match.id}] ${wordText} — ${shortSnippet}`;
+                option.dataset.entryPayload = JSON.stringify(match.data);
+                resultsSelector.appendChild(option);
+            });
+
+            // Auto-render primary array result match
+            renderWordEntry(lang, matches[0].id, matches[0].data);
+        }
+    }
+
+    /**
+     * Maps extracted properties to UI layout engine safely
+     */
+    function renderWordEntry(lang, numberString, entry) {
+        const prefix = lang === "greek" ? "G" : "H";
+        document.getElementById("section-title").textContent = lang === "greek" ? "Greek Lexicon View" : "Hebrew Lexicon View";
+        
+        // Flexible fallback assignments checking common compilation properties
+        const word = entry.lemma || entry.word || entry.text || "N/A";
+        const translit = entry.translit || entry.transliteration || entry.pronunciation || "";
+        const definition = entry.strongs_def || entry.definition || entry.meaning || entry.kjv_def || "No text definition mapped.";
+        const derivation = entry.derivation || entry.notes || entry.origin || "No derivation properties logged.";
+
+        document.getElementById("study-word").textContent = word;
+        document.getElementById("study-translit").textContent = translit ? `Transliteration: [${translit}]` : "";
+        document.getElementById("study-strongs").textContent = `${prefix}${numberString}`;
+        document.getElementById("study-meaning").textContent = definition;
+        document.getElementById("study-notes").textContent = derivation;
+    }
+
+    // Dropdown selection change handler
+    resultsSelector.addEventListener("change", function() {
+        const selectedOption = resultsSelector.options[resultsSelector.selectedIndex];
+        if (selectedOption && selectedOption.dataset.entryPayload) {
+            const entryData = JSON.parse(selectedOption.dataset.entryPayload);
+            renderWordEntry(selector.value, selectedOption.value, entryData);
+        }
+    });
+
+    // Reset layout on configuration target changes
+    function handleLanguageReset() {
+        resultsContainer.style.display = "none";
+        resultsSelector.innerHTML = "";
+        const lang = selector.value;
+        localStorage.setItem("studyLanguage", lang);
+        
+        // Populate standard defaults based on active context targets
+        strongsInput.value = lang === "greek" ? "3056" : "7965";
+        performSearch();
+    }
+
+    // Global Event Wiring
+    selector.addEventListener("change", handleLanguageReset);
+    searchBtn.addEventListener("click", performSearch);
+    strongsInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") performSearch();
+    });
+
+    // Init Call setup execution pass
+    setTimeout(handleLanguageReset, 200); // Small delay to guarantee script compilation pass 완료
+</script>
+</body>
+</html>
