@@ -4,29 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hebrew & Greek Word Study</title>
-
     <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
     <script>
-    fetch('../assets/global.html')
-      .then(r => r.text())
-      .then(html => {
-          const template = document.createElement("div");
-          template.innerHTML = html;
-
-          // Inject CSS + JS into <head>
-          document.head.append(...template.querySelectorAll("link, script"));
-
-          // Inject navbar into <body>
-          const nav = template.querySelector("nav");
-          if (nav) document.body.prepend(nav);
-      });
+        fetch('../assets/global.html')
+            .then(r => r.text())
+            .then(html => {
+                const template = document.createElement("div");
+                template.innerHTML = html;
+                // Inject CSS + JS into <head>
+                document.head.append(...template.querySelectorAll("link, script"));
+                // Inject navbar into <body>
+                const nav = template.querySelector("nav");
+                if (nav) document.body.prepend(nav);
+            });
     </script>
 </head>
-
 <body class="bg-light">
 
     <div class="container py-4 greek-container">
-
         <h1 class="greek-header mb-4">Hebrew & Greek Word Study</h1>
 
         <!-- Language Selector -->
@@ -39,29 +34,38 @@
         </div>
 
         <!-- Loading State -->
-        <div id="loading" class="greek-loading-container">
+        <div id="loading" class="greek-loading-container" style="display:none;">
             <p class="greek-loading">Loading Word of the Day...</p>
         </div>
 
         <!-- Word of the Day Section -->
-        <div id="word-section" class="greek-section" style="display:none;">
-            <h2 class="greek-title">Word of the Day</h2>
+        <div id="word-section" class="greek-section">
+            <h2 class="greek-title" id="section-title">Word of the Day</h2>
             <p class="greek-word" id="study-word"></p>
             <p class="greek-text" id="study-meaning"></p>
             <p class="greek-text" id="study-strongs"></p>
             <p class="greek-text" id="study-notes"></p>
         </div>
-
     </div>
 
     <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         // -----------------------------------------
-        // Load BOTH Hebrew & Greek Words from localStorage
+        // Fallback data if nothing is saved in localStorage
         // -----------------------------------------
-        const greekWord = JSON.parse(localStorage.getItem("greekWordOfTheDay"));
-        const hebrewWord = JSON.parse(localStorage.getItem("hebrewWordOfTheDay"));
+        const defaultGreek = {
+            word: "Logos (Λόγος)",
+            meaning: "Word, reason, or principle.",
+            strongs: "Strong's G3056",
+            notes: "Often refers to the divine reason or word of God."
+        };
+
+        const defaultHebrew = {
+            word: "Shalom (שָׁלוֹם)",
+            meaning: "Peace, completeness, soundness, welfare.",
+            strongs: "Strong's H7965",
+            notes: "More than just the absence of war; implies wholeness."
+        };
 
         const loading = document.getElementById("loading");
         const section = document.getElementById("word-section");
@@ -75,27 +79,28 @@
             const lang = selector.value;
             localStorage.setItem("studyLanguage", lang);
 
-            const wordData = lang === "greek" ? greekWord : hebrewWord;
+            // Fetch from localStorage OR fallback to default data
+            const storedGreek = JSON.parse(localStorage.getItem("greekWordOfTheDay"));
+            const storedHebrew = JSON.parse(localStorage.getItem("hebrewWordOfTheDay"));
+            
+            const wordData = lang === "greek" ? (storedGreek || defaultGreek) : (storedHebrew || defaultHebrew);
 
-            if (!wordData) {
-                loading.style.display = "block";
-                section.style.display = "none";
-                return;
-            }
-
-            loading.style.display = "none";
-            section.style.display = "block";
-
+            // Update UI elements
+            document.getElementById("section-title").textContent = lang === "greek" ? "Greek Word of the Day" : "Hebrew Word of the Day";
             document.getElementById("study-word").textContent = wordData.word;
             document.getElementById("study-meaning").textContent = "Meaning: " + wordData.meaning;
             document.getElementById("study-strongs").textContent = "Strong’s: " + wordData.strongs;
             document.getElementById("study-notes").textContent = "Notes: " + wordData.notes;
+
+            // Show section, hide loading
+            loading.style.display = "none";
+            section.style.display = "block";
         }
 
         // Load initial word
         loadWord();
 
-        // Change language
+        // Change language when selector is used
         selector.addEventListener("change", loadWord);
     </script>
 </body>
