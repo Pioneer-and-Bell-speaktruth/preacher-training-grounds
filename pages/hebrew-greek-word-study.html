@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hebrew & Greek Word Study</title>
     <script>
+        // Fetches global layout fragments safely from root directories
         fetch('../assets/global.html')
             .then(r => {
                 if(!r.ok) throw new Error("Global layout asset not found");
@@ -19,14 +20,11 @@
             })
             .catch(err => console.warn("Navbar loading bypassed:", err));
     </script>
-    
-    <!-- Dictionary Scripts with Error Catching -->
-    <script src="../assets/strongs-greek-dictionary.js" onerror="alert('Could not load strongs-greek-dictionary.js.\n1. Check if the filename uses exact lowercase letters on GitHub.\n2. Verify the file is committed to your assets folder.')"></script>
-    <script src="../assets/strongs-hebrew-dictionary.js" onerror="alert('Could not load strongs-hebrew-dictionary.js.\n1. Check if the filename uses exact lowercase letters on GitHub.\n2. Verify the file is committed to your assets folder.')"></script>
 </head>
 <body class="bg-light">
     <div class="container py-4 greek-container">
         <h1 class="greek-header mb-4">Hebrew & Greek Concordance Study</h1>
+        
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <label class="form-label fw-bold">Testament / Language:</label>
@@ -43,10 +41,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- System Processing Status Bar Indicator -->
+        <div id="loading-indicator" class="alert alert-info py-2" style="display:none;">
+            <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div>
+            Parsing concordance data table directly from source files...
+        </div>
+
         <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
             <label class="form-label fw-bold text-dark"><span class="badge bg-warning text-dark me-2" id="match-count">0</span> Multiple Dictionary Matches Found. Select Entry:</label>
             <select id="results-selector" class="form-select border-warning"></select>
         </div>
+
         <div id="word-section" class="greek-section">
             <h2 class="greek-title mb-3" id="section-title">Word Study</h2>
             <div class="card p-4 shadow-sm">
@@ -67,38 +73,71 @@
             </div>
         </div>
     </div>
-    <script src="../assets/dist/bootstrap.bundle.min.js"></script>
-
+    <script src="../assets/dist/bootstrap/bootstrap.bundle.min.js"></script>
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
         const searchBtn = document.getElementById("search-btn");
         const resultsContainer = document.getElementById("results-selector-container");
         const resultsSelector = document.getElementById("results-selector");
+        const loadingIndicator = document.getElementById("loading-indicator");
 
         const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
         selector.value = savedLanguage;
 
-        function getLoadedDictionary(lang) {
-            if (lang === "greek") {
-                return window.strongsGreekDictionary || window.strongsGreek || window.greekDictionary || window.greekStrongs || window.strongsGreekDict;
-            } else {
-                return window.strongsHebrewDictionary || window.strongsHebrew || window.hebrewDictionary || window.hebrewStrongs || window.strongsHebrewDict;
+        // Global Cache to hold parsed JSON objects securely
+        let dictionaryCache = { greek: null, hebrew: null };
+
+        /**
+         * Adaptive Fetch Parser 
+         * Reads the file as a plain text string, strips away any variable assignments 
+         * at the top (e.g., 'const data = '), and extracts the pure raw JSON object.
+         */
+        async function fetchAndParseDictionary(lang) {
+            if (dictionaryCache[lang]) return dictionaryCache[lang];
+            
+            loadingIndicator.style.display = "block";
+            const filename = lang === "greek" ? "strongs-greek-dictionary.js" : "strongs-hebrew-dictionary.js";
+            
+            try {
+                const response = await fetch(`../assets/${filename}`);
+                if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
+                
+                let textData = await response.trim();
+                
+                // Clean off code variable definitions (e.g., 'var x = ', 'const y =', 'window.z =')
+                const jsonStartIndex = textData.indexOf('{');
+                const jsonEndIndex = textData.lastIndexOf('}');
+                
+                if (jsonStartIndex === -1 || jsonEndIndex === -1) {
+                    throw new Error("Could not find standard JSON braces formatting inside the script file.");
+                }
+                
+                // Extract only the plain data string block and clean loose trailing semicolons
+                const cleanJsonText = textData.substring(jsonStartIndex, jsonEndIndex + 1);
+                
+                // Compile directly into an accessible runtime memory variable array
+                dictionaryCache[lang] = JSON.parse(cleanJsonText);
+                return dictionaryCache[lang];
+            } catch (err) {
+                console.error("Dictionary file fetch engine crash context:", err);
+                alert(`Fetch Parser Engine Error: Failed to extract structural data from ${filename}.\nEnsure your script file matches clean JSON styling inside.`);
+                return null;
+            } finally {
+                loadingIndicator.style.display = "none";
             }
         }
 
-        function performSearch() {
+        async function performSearch() {
             const query = strongsInput.value.trim();
             if (!query) return;
 
             const lang = selector.value;
             localStorage.setItem("studyLanguage", lang);
             
-            const dict = getLoadedDictionary(lang);
-            if (!dict) {
-                alert(`CRITICAL ERROR: Dictionary data file loaded, but the variable inside could not be found.\n\nOpen your .js file in a text editor and check what the variable name at the very top is!`);
-                return;
-            }
+            // Wait for file parsing to complete successfully
+            const dict = await fetchAndParseDictionary(lang);
+            if (!dict) return;
 
             resultsContainer.style.display = "none";
             resultsSelector.innerHTML = "";
@@ -146,7 +185,7 @@
             }
 
             if (matches.length === 1) {
-                renderWordEntry(lang, matches[0].id, matches[0].data);
+                renderWordEntry(lang, matches.id, matches.data);
             } else {
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
@@ -165,7 +204,7 @@
                     resultsSelector.appendChild(option);
                 });
 
-                renderWordEntry(lang, matches[0].id, matches[0].data);
+                renderWordEntry(lang, matches.id, matches.data);
             }
         }
 
