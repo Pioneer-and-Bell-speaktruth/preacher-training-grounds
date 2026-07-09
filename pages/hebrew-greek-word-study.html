@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hebrew & Greek Word Study</title>
     <script>
-        fetch('./assets/global.html')
+        // Fetches global components from the root directory assets folder safely
+        fetch('../assets/global.html')
             .then(r => {
                 if(!r.ok) throw new Error("Global layout asset not found");
                 return r.text();
@@ -19,8 +20,9 @@
             })
             .catch(err => console.warn("Navbar loading bypassed:", err));
     </script>
-    <script src="./assets/strongs-greek-dictionary.js"></script>
-    <script src="./assets/strongs-hebrew-dictionary.js"></script>
+    <!-- Stepping up one folder level to find the root assets directory -->
+    <script src="../assets/strongs-greek-dictionary.js"></script>
+    <script src="../assets/strongs-hebrew-dictionary.js"></script>
 </head>
 <body class="bg-light">
     <div class="container py-4 greek-container">
@@ -65,7 +67,7 @@
             </div>
         </div>
     </div>
-    <script src="./assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
