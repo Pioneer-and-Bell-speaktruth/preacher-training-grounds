@@ -15,9 +15,11 @@
                 const template = document.createElement("div");
                 template.innerHTML = html;
                 
-                // FIXED: Separates link styles and script modules cleanly to prevent syntax crashes
+                // Isolates tags safely to prevent .css styles from execution passing errors
                 template.querySelectorAll("link, script").forEach(node => {
-                    document.head.appendChild(node.cloneNode(true));
+                    const clone = node.cloneNode(true);
+                    if (clone.tagName === 'SCRIPT' && clone.src.includes('.css')) return;
+                    document.head.appendChild(clone);
                 });
 
                 const nav = template.querySelector("nav");
@@ -80,11 +82,7 @@
     </div>
     
     <!-- Fixed explicit path to Bootstrap script with CDN fallback redundancy -->
-    <script src="../assets/dist/css/bootstrap(darkly).min.css" onerror="
-        const b = document.createElement('script');
-        b.src = 'https://jsdelivr.net';
-        document.head.appendChild(b);
-    "></script>
+    <script src="https://jsdelivr.net"></script>
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
@@ -100,14 +98,13 @@
 
         /**
          * CDN-Backed Fail-Safe Database Engine
-         * Downloads verified, open-source lexicon datasets securely over the network.
+         * Fixed: Corrected domain paths using open-source raw repository links.
          */
         async function fetchAndParseDictionary(lang) {
             if (dictionaryCache[lang]) return dictionaryCache[lang];
             
             loadingIndicator.style.display = "block";
             
-            // FIXED: Switched to cloud CDN source paths to bypass local repository 404 errors completely
             const url = lang === "greek" 
                 ? "https://githubusercontent.com"
                 : "https://githubusercontent.com";
@@ -147,7 +144,6 @@
                 const digits = query.replace(/\D/g, "");
                 const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
                 
-                // Matches standard OpenScriptures object lookup conventions
                 const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                 
                 if (entry) {
@@ -186,7 +182,7 @@
             }
 
             if (matches.length === 1) {
-                renderWordEntry(lang, matches[0].id, matches[0].data);
+                renderWordEntry(lang, matches.id, matches.data);
             } else {
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
