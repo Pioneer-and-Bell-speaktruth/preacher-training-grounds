@@ -142,7 +142,7 @@
                 const digits = query.replace(/\D/g, "");
                 const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
                 
-                // Fallbacks to handle various dictionary object formatting keys (e.g., "G3056", "3056", or 3056)
+                // Fallbacks to handle various dictionary object formatting keys (e.g., "G3056", "3056")
                 const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                 
                 if (entry) {
@@ -182,10 +182,10 @@
             }
 
             if (matches.length === 1) {
-                // FIXED CRASH: Grabs the accurate dictionary object index mapping explicitly from array entry 0
+                // FIXED SINGLE MATCH CRASH: Extracts explicitly from index position [0] of the results array
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
-                // Populate dropdown menu if multiple entries contain the searched word
+                // Populate dropdown menu if multiple entries contain the searched word (like "perfect")
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
                 
