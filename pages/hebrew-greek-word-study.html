@@ -35,7 +35,6 @@
         
         <!-- High-Contrast Left-Aligned Buttons Panel Area -->
         <div class="d-flex flex-wrap gap-2 mb-4" style="max-width: 600px;">
-            <!-- Swapped to btn-warning for a high-contrast solid background visibility appearance -->
             <button id="random-hebrew-btn" class="btn btn-warning btn-lg text-start text-dark flex-grow-1 py-3 px-4 shadow-sm fw-bold">
                 Draw New Hebrew Word (O.T.)
             </button>
@@ -44,31 +43,20 @@
             </button>
         </div>
 
-        <!-- The Unified Display Output Visual Component Card Card -->
+        <!-- The Simplified Display Output Card -->
         <div id="word-section" class="greek-section" style="max-width: 650px;">
             <h2 class="greek-title mb-3" id="section-title">Word Details</h2>
             <div class="card p-4 shadow-sm text-start">
-                <div class="d-flex justify-content-between align-items-start flex-wrap">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div class="text-start">
+                        <!-- Holds Root Word and English Word -->
                         <p class="display-4 fw-bold text-primary mb-1" id="study-word">---</p>
-                        <p class="text-muted fs-5 mb-3" id="study-translit"></p>
+                        <!-- Holds Pronunciation / Transliteration -->
+                        <p class="text-muted fs-5 mb-0" id="study-translit"></p>
                     </div>
+                    <!-- Holds Strong's Number Badge -->
                     <span id="study-strongs" class="badge bg-secondary fs-4 py-2 px-3">---</span>
                 </div>
-                <hr>
-                
-                <p class="greek-text text-start"><strong>KJV Translation Usage:</strong></p>
-                <p id="study-kjv" class="lh-base fs-5 ps-3 border-start border-3 border-warning bg-white p-3 rounded mb-3 text-start fw-semibold text-secondary">
-                    ---
-                </p>
-
-                <p class="greek-text text-start"><strong>Lexicon Definition:</strong></p>
-                <p id="study-meaning" class="lh-base fs-5 ps-3 border-start border-3 border-primary bg-white p-3 rounded text-start">
-                    Loading daily lexicon data entry...
-                </p>
-                
-                <p class="greek-text mt-3 text-start"><strong>Derivation / Origin Etymology:</strong></p>
-                <p id="study-notes" class="text-muted italic ps-3 bg-white p-2 rounded text-start">---</p>
             </div>
         </div>
     </div>
@@ -83,18 +71,14 @@
             const studyStrongs = document.getElementById("study-strongs");
             const studyWord = document.getElementById("study-word");
             const studyTranslit = document.getElementById("study-translit");
-            const studyKjv = document.getElementById("study-kjv");
-            const studyMeaning = document.getElementById("study-meaning");
-            const studyNotes = document.getElementById("study-notes");
 
             const hebrewBtn = document.getElementById("random-hebrew-btn");
             const greekBtn = document.getElementById("random-greek-btn");
 
-            // -----------------------------
+            // -------------------------------------------------------------
             // DYNAMIC RANDOM ELEMENT LOGIC
-            // -----------------------------
+            // -------------------------------------------------------------
             function getRandomWord(lang) {
-                // Read directly from your file's native global variables
                 const dict = lang === "greek" 
                     ? window.strongsGreekDictionary 
                     : window.strongsHebrewDictionary;
@@ -114,28 +98,25 @@
             }
 
             function renderWordEntry(lang, fullKey, entry) {
-                // Clear out letter prefixes for display formatting
                 const numericId = fullKey.replace(/\D/g, "");
                 const prefix = lang === "greek" ? "G" : "H";
 
                 if (studyStrongs) studyStrongs.textContent = `${prefix}${numericId}`;
                 if (sectionTitle) sectionTitle.textContent = lang === "greek" ? "Greek Daily Word Study" : "Hebrew Daily Word Study";
                 
-                // 1. Isolate the original lexical script word code
+                // 1. Isolate original lexical word
                 const rootWord = entry.lemma || "---";
                 
-                // 2. Extract English Translation Keyword from the definition string
+                // 2. Safely isolate the very first English definition word
                 let englishTranslation = "";
                 if (entry.strongs_def) {
-                    // Pull the very first words before the first comma/semicolon for a clean summary
                     const cleanWords = entry.strongs_def.split(/[;.,]/);
-                    // FIXED: Targets the string element explicitly to execute .replace() cleanly without crashing
                     if (cleanWords && cleanWords.length > 0) {
                         englishTranslation = cleanWords[0].replace(/[^a-zA-Z\s]/g, "").trim();
                     }
                 }
 
-                // Append the discovered English keyword directly alongside the original word format layout
+                // Render word alongside English subtitle translation
                 if (studyWord) {
                     if (englishTranslation) {
                         studyWord.innerHTML = `${rootWord} <span class="fs-2 text-muted fw-normal ms-2">(${englishTranslation.toLowerCase()})</span>`;
@@ -144,27 +125,11 @@
                     }
                 }
                 
-                // 3. Map Transliteration and Pronunciation metrics
-                // Hebrew schema uses 'xlit' and 'pron'. Greek schema uses 'translit'.
+                // 3. Map Transliteration and Pronunciation text fields
                 const translitData = entry.translit || entry.xlit || "";
                 const pronData = entry.pron || "";
                 if (studyTranslit) {
                     studyTranslit.textContent = (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
-                }
-                
-                // 4. Map KJV Translation Usage Space
-                if (studyKjv) {
-                    studyKjv.textContent = entry.kjv_def || "No specific isolated KJV translations cataloged.";
-                }
-
-                // 5. Map Lexicon Definition & Usage
-                if (studyMeaning) {
-                    studyMeaning.textContent = entry.strongs_def || "No full definition recorded.";
-                }
-                
-                // 6. Map Derivation / Origin Footnotes
-                if (studyNotes) {
-                    studyNotes.textContent = entry.derivation || "No derivation footnotes recorded.";
                 }
             }
 
@@ -174,10 +139,10 @@
             if (hebrewBtn) hebrewBtn.addEventListener("click", () => getRandomWord("hebrew"));
             if (greekBtn) greekBtn.addEventListener("click", () => getRandomWord("greek"));
 
-            // AUTOMATIC INITIALIZATION: Delayed launch allows dictionary processing streams to completely stabilize
+            // Initialize on Greek page load
             setTimeout(() => {
                 getRandomWord("greek");
-            }, 500);
+            }, 400);
         });
     </script>
 </body>
