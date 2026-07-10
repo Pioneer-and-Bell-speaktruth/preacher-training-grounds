@@ -155,6 +155,9 @@
             }
         }
 
+        // -------------------------------------------------------------
+        // FIXED ENGLISH SEARCH ENGINE (Explicitly targets text properties)
+        // -------------------------------------------------------------
         function searchByEnglishWord(lang, englishWord, dict) {
             const lowerWord = englishWord.toLowerCase();
             const matches = [];
@@ -164,13 +167,18 @@
                 const entry = dict[key];
                 if (!entry) continue;
 
-                // Flatten all fields of the dictionary entry to search for the English keyword
-                const searchableText = Object.values(entry)
-                    .filter(val => typeof val === 'string')
-                    .join(' ')
-                    .toLowerCase();
+                // Grab only the actual text strings where English words live
+                const strongsDef = (entry.strongs_def || "").toLowerCase();
+                const kjvDef = (entry.kjv_def || entry.kjv_usage || "").toLowerCase();
+                const definition = (entry.definition || entry.meaning || "").toLowerCase();
+                const lemma = (entry.lemma || entry.word || "").toLowerCase();
 
-                if (searchableText.includes(lowerWord)) {
+                // Search strictly inside these combined fields
+                if (strongsDef.includes(lowerWord) || 
+                    kjvDef.includes(lowerWord) || 
+                    definition.includes(lowerWord) || 
+                    lemma.includes(lowerWord)) {
+                    
                     const cleanId = key.replace(/\D/g, "");
                     matches.push({ id: cleanId, key: key, data: entry });
                 }
@@ -182,7 +190,7 @@
             }
 
             if (matches.length === 1) {
-                // FIXED CRASH: Correctly targets the index position element [0] from the match array list
+                // FIXED SINGLE MATCH: Pulls explicitly from array index 0
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
                 // Populate dropdown menu if multiple entries contain the searched word (like "perfect")
@@ -215,7 +223,7 @@
             // 1. Map Lemma/Word
             document.getElementById("study-word").textContent = entry.lemma || entry.word || "---";
             
-            // 2. Map Transliteration (Open Scriptures maps 'xlit' and 'pron' values)
+            // 2. Map Transliteration
             const translitData = entry.xlit || entry.transliteration || entry.translit || "";
             const pronData = entry.pron || entry.pronunciation || "";
             document.getElementById("study-translit").textContent = 
@@ -228,7 +236,7 @@
             }
             document.getElementById("study-kjv").textContent = kjvString || "No specific isolated KJV translations cataloged.";
 
-            // 4. Map Lexicon Definition & Usage (Maps 'strongs_def' key parameters)
+            // 4. Map Lexicon Definition & Usage
             document.getElementById("study-meaning").textContent = 
                 entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
             
@@ -270,7 +278,6 @@
             const lang = selector.value;
             const dict = getActiveDictionary(lang);
             if (dict && dict[key]) {
-                // FIXED KEY STRIPPING: Keeps alpha characters intact so "G5046" matches your file keys perfectly
                 const cleanId = key.replace(/\D/g, "");
                 renderWordEntry(lang, cleanId, dict[key]);
             }
