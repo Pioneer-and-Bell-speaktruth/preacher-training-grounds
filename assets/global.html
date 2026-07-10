@@ -1,4 +1,10 @@
- <!-- Global Navbar --> 
+<!-- 1. Enforces mobile phone screen scaling -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- 2. Bootswatch Darkly Theme Stylesheet --> 
+<link rel="stylesheet" href="/preacher-training-grounds/assets/dist/css/bootstrap(darkly).min.css"> 
+
+<!-- 3. Global Navbar Structure --> 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4"> 
   <div class="container"> 
     <a class="navbar-brand" href="/preacher-training-grounds/">Home</a> 
@@ -7,7 +13,6 @@
       <span class="navbar-toggler-icon"></span> 
     </button> 
     
-    <!-- FIXED: Removed the accidental space in 'navbarNav' -->
     <div class="collapse navbar-collapse" id="navbarNav"> 
       <ul class="navbar-nav ms-auto"> 
         <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/scripture-encouragement.html">Scripture Encouragement</a></li> 
@@ -22,3 +27,14 @@
     </div> 
   </div> 
 </nav>
+
+<!-- 4. THE ONLY FIX YOU NEED: Automatically injects and executes the script programmatically -->
+<img src="x" onerror="
+  if(!window.bootstrapLoaded){
+    window.bootstrapLoaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://jsdelivr.net';
+    s.crossOrigin = 'anonymous';
+    document.body.appendChild(s);
+  }
+" style="display:none;">
