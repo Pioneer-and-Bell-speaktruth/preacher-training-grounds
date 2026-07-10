@@ -25,27 +25,26 @@
 
 <body class="bg-light">
 
-        <div class="container py-4 daily-container">
-            <!-- Plan Selection -->
-            <div class="daily-section mb-4">
-                <h2 class="daily-title">Choose Your Reading Plan</h2>
-        
-                <select id="plan-selector" class="form-select py-3">
-                   <option value="sectional">Sectional Plan</option>
-                   <option value="chronological">Chronological Plan</option>
-                </select>
-        
-                <p class="daily-text mt-2">
-                    Your selection will automatically update today's reading.
-                </p>
-            </div>
-            
-            <!-- This single element will hold whichever layout is active -->
-            <div id="secret-text" hidden></div>
+    <div class="container py-4 daily-container">
+        <!-- Plan Selection -->
+        <div class="daily-section mb-4">
+            <h2 class="daily-title">Choose Your Reading Plan</h2>
+    
+            <select id="plan-selector" class="form-select py-3">
+               <option value="sectional">Sectional Plan</option>
+               <option value="chronological">Chronological Plan</option>
+            </select>
+    
+            <p class="daily-text mt-2">
+                Your selection will automatically update today's reading.
+            </p>
         </div>
+        
+        <!-- This single element will hold whichever layout is active -->
+        <div id="secret-text" hidden></div>
 
         <!-- Today's Reading -->
-        <div class="daily-section">
+        <div class="daily-section mt-4">
             <h2 class="daily-title">Today's Reading (Day <span id="today-number"></span>)</h2>
             <p class="daily-text">Old Testament: <span id="ot-reading"></span></p>
             <p class="daily-text">New Testament: <span id="nt-reading"></span></p>
@@ -63,13 +62,22 @@
         <button id="journal-btn" class="btn w-100 py-3 daily-journal-btn mb-5">
             <span class="daily-journal-text">Add Notes</span>
         </button>
-
     </div>
 
-    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Core Dependencies -->
+    <script src="../assets/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/sectional-plan.js"></script>
     <script src="../assets/js/chronological-plan.js"></script>
 
     <script>
+        // -----------------------------
+        // Fail-safes for loading lags
+        // -----------------------------
+        window.sectionalPlan = window.sectionalPlan || [{ot: ["Genesis 1"], nt: ["Matthew 1"]}];
+        window.chronologicalPlan = window.chronologicalPlan || [{ot: ["Genesis 1"], nt: ["Matthew 1"]}];
+        window.sectionalPlanHTML = window.sectionalPlanHTML || "<p>Sectional plan layout content loading...</p>";
+        window.chronologicalPlanHTML = window.chronologicalPlanHTML || "<p>Chronological plan layout content loading...</p>";
+
         // -----------------------------
         // Load reading plan data
         // -----------------------------
@@ -77,26 +85,23 @@
 
         const readingPlan =
             selectedPlan === "chronological"
-                ? chronologicalPlan
-                : sectionalPlan;
+                ? window.chronologicalPlan
+                : window.sectionalPlan;
 
         const currentDay = parseInt(localStorage.getItem("currentReadingDay")) || 1;
-        const todayPlan = readingPlan[currentDay - 1];
+        const todayPlan = readingPlan[currentDay - 1] || readingPlan[0];
 
         document.getElementById("today-number").textContent = currentDay;
-        document.getElementById("ot-reading").textContent = todayPlan.ot.join(", ");
-        document.getElementById("nt-reading").textContent = todayPlan.nt.join(", ");
+        document.getElementById("ot-reading").textContent = todayPlan.ot ? todayPlan.ot.join(", ") : "N/A";
+        document.getElementById("nt-reading").textContent = todayPlan.nt ? todayPlan.nt.join(", ") : "N/A";
 
         // -----------------------------
-        // New: Dynamic Layout Text Injection
+        // Dynamic Layout Text Injection
         // -----------------------------
         const targetContainer = document.getElementById("secret-text");
         
         if (targetContainer) {
-            // Unhide the container since a plan is officially active
             targetContainer.hidden = false; 
-
-            // Inject the corresponding HTML structure based on the user's plan selection
             targetContainer.innerHTML = 
                 selectedPlan === "chronological"
                     ? window.chronologicalPlanHTML
@@ -104,7 +109,7 @@
         }
 
         // -----------------------------
-        // Buttons
+        // Action Buttons
         // -----------------------------
         document.getElementById("complete-btn").addEventListener("click", () => {
             const progress = JSON.parse(localStorage.getItem("readingProgress")) || {};
@@ -124,32 +129,15 @@
 
         // -----------------------------
         // Plan Selector
-       // -----------------------------
-       document.getElementById("plan-selector").value = selectedPlan;
-
-       document.getElementById("plan-selector").addEventListener("change", (e) => {
-           const plan = e.target.value;
-           localStorage.setItem("selectedPlan", plan);
-           window.location.reload();
-       });
-    </script>
-
-       // -----------------------------
-       // Hidden Text
-      // -----------------------------
-    <script>
-        const menu = document.getElementById('menu');
-        const secretText = document.getElementById('secret-text');
-
-        menu.addEventListener('change', function() {
-            // If the user selected the default empty value, keep it hidden
-            if (menu.value === "") {
-                secretText.hidden = true;
-            } else {
-                // Otherwise, reveal the text element
-                secretText.hidden = false;
-            }
-        });
+        // -----------------------------
+        const planSelector = document.getElementById("plan-selector");
+        if (planSelector) {
+            planSelector.value = selectedPlan;
+            planSelector.addEventListener("change", (e) => {
+                localStorage.setItem("selectedPlan", e.target.value);
+                window.location.reload();
+            });
+        }
     </script>
 </body>
 </html>
