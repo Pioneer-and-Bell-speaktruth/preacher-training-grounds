@@ -31,7 +31,7 @@
             <h2 class="daily-title">Choose Your Reading Plan</h2>
     
             <select id="plan-selector" class="form-select py-3">
-               <option value="select">Select a plan.</option>
+               <option value="select" selected>Select a plan.</option>
                <option value="sectional">Sectional Plan</option>
                <option value="chronological">Chronological Plan</option>
             </select>
@@ -81,37 +81,58 @@
         // -----------------------------
         // Load reading plan data
         // -----------------------------
-        const selectedPlan = localStorage.getItem("selectedPlan") || "sectional";
-
-        const readingPlan =
-            selectedPlan === "chronological"
-                ? window.chronologicalPlan
-                : window.sectionalPlan;
+        // Default to "select" instead of "sectional" if no selection exists
+        const selectedPlan = localStorage.getItem("selectedPlan") || "select";
 
         const currentDay = parseInt(localStorage.getItem("currentReadingDay")) || 1;
-        const todayPlan = readingPlan[currentDay - 1] || readingPlan[0];
-
         document.getElementById("today-number").textContent = currentDay;
-        document.getElementById("ot-reading").textContent = todayPlan.ot ? todayPlan.ot.join(", ") : "N/A";
-        document.getElementById("nt-reading").textContent = todayPlan.nt ? todayPlan.nt.join(", ") : "N/A";
+
+        // Target all standard structural page view containers
+        const targetContainer = document.getElementById("secret-text");
+        const todayReadingSection = document.querySelector(".daily-section.mt-4");
 
         // -----------------------------
-        // Dynamic Layout Text Injection
+        // Check selection state
         // -----------------------------
-        const targetContainer = document.getElementById("secret-text");
-        
-        if (targetContainer) {
-            targetContainer.hidden = false; 
-            targetContainer.innerHTML = 
+        if (selectedPlan === "select") {
+            // Keep content elements hidden if no plan is chosen yet
+            if (targetContainer) targetContainer.hidden = true;
+            if (todayReadingSection) todayReadingSection.hidden = true;
+            
+            document.getElementById("ot-reading").textContent = "Select a plan first";
+            document.getElementById("nt-reading").textContent = "Select a plan first";
+        } else {
+            // A valid reading plan is selected -> reveal standard sections
+            if (todayReadingSection) todayReadingSection.hidden = false;
+
+            const readingPlan =
                 selectedPlan === "chronological"
-                    ? window.chronologicalPlanHTML
-                    : window.sectionalPlanHTML;
+                    ? window.chronologicalPlan
+                    : window.sectionalPlan;
+
+            const todayPlan = readingPlan[currentDay - 1] || readingPlan;
+
+            document.getElementById("ot-reading").textContent = todayPlan.ot ? todayPlan.ot.join(", ") : "N/A";
+            document.getElementById("nt-reading").textContent = todayPlan.nt ? todayPlan.nt.join(", ") : "N/A";
+
+            // Inject and unhide the long-form reference layout content
+            if (targetContainer) {
+                targetContainer.hidden = false; 
+                targetContainer.innerHTML = 
+                    selectedPlan === "chronological"
+                        ? window.chronologicalPlanHTML
+                        : window.sectionalPlanHTML;
+            }
         }
 
         // -----------------------------
         // Action Buttons
         // -----------------------------
         document.getElementById("complete-btn").addEventListener("click", () => {
+            if (selectedPlan === "select") {
+                alert("Please select a reading plan first!");
+                return;
+            }
             const progress = JSON.parse(localStorage.getItem("readingProgress")) || {};
             progress[currentDay] = true;
             localStorage.setItem("readingProgress", JSON.stringify(progress));
@@ -128,7 +149,7 @@
         });
 
         // -----------------------------
-        // Plan Selector
+        // Plan Selector Change Event
         // -----------------------------
         const planSelector = document.getElementById("plan-selector");
         if (planSelector) {
