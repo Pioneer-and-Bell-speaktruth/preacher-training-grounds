@@ -123,7 +123,7 @@
     </script>
 
     <script>
-                const selector = document.getElementById("language-selector");
+        const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
         const searchBtn = document.getElementById("search-btn");
         const resultsContainer = document.getElementById("results-selector-container");
@@ -203,7 +203,7 @@
             }
 
             if (matches.length === 1) {
-                // FIXED CRASH: Grabs the data directly out of the first array element index [0]
+                // FIXED CRASH: Grabs the accurate dictionary object index mapping explicitly from array entry 0
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
                 // Populate dropdown menu if multiple entries contain the searched word
@@ -214,7 +214,6 @@
                 resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
                 
                 matches.forEach(match => {
-                    // Pull Open Scriptures standard keys: lemma/word and strongs_def/kjv_def/definition
                     const wordLabel = match.data.lemma || match.data.word || "Word";
                     const shortMeaning = match.data.strongs_def || match.data.definition || match.data.meaning || "";
                     const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
@@ -234,20 +233,27 @@
             const prefix = lang === "greek" ? "G" : "H";
             document.getElementById("study-strongs").textContent = `${prefix}${idStr}`;
             
-            // 1. Map Lemma/Word (Checks for variations like .lemma, .word)
+            // 1. Map Lemma/Word
             document.getElementById("study-word").textContent = entry.lemma || entry.word || "---";
             
-            // 2. Map Transliteration (Open Scriptures uses 'xlit' or 'pron')
+            // 2. Map Transliteration (Open Scriptures maps 'xlit' and 'pron' values)
             const translitData = entry.xlit || entry.transliteration || entry.translit || "";
             const pronData = entry.pron || entry.pronunciation || "";
             document.getElementById("study-translit").textContent = 
                 (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
             
-            // 3. Map Lexicon Definition & KJV Usage (Checks for 'strongs_def' first)
+            // 3. Map KJV Translation Usage Matrix Definition Space
+            let kjvString = entry.kjv_def || entry.kjv_usage || "";
+            if (kjvString.startsWith(":--")) {
+                kjvString = kjvString.replace(/^:--/, "").trim();
+            }
+            document.getElementById("study-kjv").textContent = kjvString || "No specific isolated KJV translations cataloged.";
+
+            // 4. Map Lexicon Definition & Usage (Maps 'strongs_def' key parameters)
             document.getElementById("study-meaning").textContent = 
-                entry.strongs_def || entry.definition || entry.meaning || entry.description || "No definition parsed.";
+                entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
             
-            // 4. Map Derivation / Origin Etymology (Checks for 'derivation' first)
+            // 5. Map Derivation / Origin Etymology
             document.getElementById("study-notes").textContent = 
                 entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
             
@@ -258,6 +264,7 @@
             document.getElementById("study-strongs").textContent = "---";
             document.getElementById("study-word").textContent = "---";
             document.getElementById("study-translit").textContent = "";
+            document.getElementById("study-kjv").textContent = "---";
             document.getElementById("study-meaning").textContent = "Select an entry from the dropdown above to display details.";
             document.getElementById("study-notes").textContent = "---";
         }
