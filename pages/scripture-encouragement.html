@@ -29,15 +29,16 @@
 
         <h1 class="se-header mb-4">Scripture Encouragement</h1>
 
-        <div id="se-list"></div>
+        <!-- Vertical grid alignment wrapper stack for left-aligned buttons -->
+        <div id="se-list" class="d-grid gap-3" style="max-width: 500px;"></div>
 
     </div>
 
-    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Removed local bootstrap.bundle.min.js to fix 404 console errors -->
 
     <script>
         // ---------------------------------------------------
-        // Categories (same as React version)
+        // Categories
         // ---------------------------------------------------
         const categories = [
             { title: "1 & 2 Timothy", file: "timothy" },
@@ -51,20 +52,24 @@
         const list = document.getElementById("se-list");
 
         categories.forEach(cat => {
-            const card = document.createElement("div");
-            card.classList.add("se-card");
-
-            card.innerHTML = `
-                <div class="se-card-text">${cat.title}</div>
+            // Create a formal HTML button element instead of a structural div card block
+            const button = document.createElement("button");
+            
+            // Bootstrap styles to make it a left-aligned, full-width button line structure
+            button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+            
+            button.innerHTML = `
+                <span class="se-card-text fw-bold">${cat.title}</span>
             `;
 
-            card.addEventListener("click", () => {
+            // Active tracking redirect route trigger listener hook
+            button.addEventListener("click", () => {
                 sessionStorage.setItem("verseListFile", cat.file);
                 sessionStorage.setItem("verseListTitle", cat.title);
                 window.location.href = "verse-list.html";
             });
 
-            list.appendChild(card);
+            list.appendChild(button);
         });
     </script>
 </body>
