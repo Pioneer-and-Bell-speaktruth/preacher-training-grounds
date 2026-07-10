@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hebrew & Greek Word Study</title>
+    
+    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
     <script>
-        // Safely fetches global template layout structures
-        fetch('../assets/global.html')
-            .then(r => {
-                if(!r.ok) throw new Error("Global layout asset not found");
-                return r.text();
-            })
-            .then(html => {
-                const template = document.createElement("div");
-                template.innerHTML = html;
-                
-                // Isolates tags safely to prevent .css styles from execution passing errors
-                template.querySelectorAll("link, script").forEach(node => {
-                    const clone = node.cloneNode(true);
-                    if (clone.tagName === 'SCRIPT' && clone.src.includes('.css')) return;
-                    document.head.appendChild(clone);
-                });
+    fetch('../assets/global.html')
+        .then(r => {
+            if(!r.ok) throw new Error("Global layout asset not found");
+            return r.text();
+        })
+        .then(html => {
+            const template = document.createElement("div");
+            template.innerHTML = html;
+            
+            template.querySelectorAll("link, script").forEach(node => {
+                const clone = node.cloneNode(true);
+                if (clone.tagName === 'SCRIPT' && clone.src.includes('.css')) return;
+                document.head.appendChild(clone);
+            });
 
-                const nav = template.querySelector("nav");
-                if (nav) document.body.prepend(nav);
-            })
-            .catch(err => console.warn("Navbar loading bypassed:", err));
+            const nav = template.querySelector("nav");
+            if (nav) document.body.prepend(nav);
+        })
+        .catch(err => console.warn("Navbar loading bypassed:", err));
     </script>
 </head>
 <body class="bg-light">
@@ -36,8 +36,8 @@
             <div class="col-md-4">
                 <label class="form-label fw-bold">Testament / Language:</label>
                 <select id="language-selector" class="form-select">
-                    <option value="greek">Greek (New Testament)</option>
                     <option value="hebrew">Hebrew (Old Testament)</option>
+                    <option value="greek" selected>Greek (New Testament)</option>
                 </select>
             </div>
             <div class="col-md-8">
@@ -49,91 +49,67 @@
             </div>
         </div>
 
-        <!-- System Processing Status Bar Indicator -->
-        <div id="loading-indicator" class="alert alert-info py-2" style="display:none;">
-            <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div>
-            Downloading stable lexicon database from CDN registry...
-        </div>
-
         <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
             <label class="form-label fw-bold text-dark"><span class="badge bg-warning text-dark me-2" id="match-count">0</span> Multiple Dictionary Matches Found. Select Entry:</label>
-            <select id="results-selector" class="form-select border-warning"></select>
+            <select id="results-selector" class="form-select border-warning text-start"></select>
         </div>
 
         <div id="word-section" class="greek-section">
             <h2 class="greek-title mb-3" id="section-title">Word Study</h2>
-            <div class="card p-4 shadow-sm">
+            <div class="card p-4 shadow-sm text-start">
                 <div class="d-flex justify-content-between align-items-start flex-wrap">
-                    <div>
+                    <div class="text-start">
                         <p class="display-4 fw-bold text-primary mb-1" id="study-word">---</p>
                         <p class="text-muted fs-5 mb-3" id="study-translit"></p>
                     </div>
                     <span id="study-strongs" class="badge bg-secondary fs-4 py-2 px-3">---</span>
                 </div>
                 <hr>
-                <p class="greek-text"><strong>Lexicon Definition & KJV Usage:</strong></p>
-                <p id="study-meaning" class="lh-base fs-5 ps-3 border-start border-3 border-primary bg-white p-3 rounded shadow-inner">
+                <p class="greek-text text-start"><strong>Lexicon Definition & KJV Usage:</strong></p>
+                <p id="study-meaning" class="lh-base fs-5 ps-3 border-start border-3 border-primary bg-white p-3 rounded shadow-inner text-start">
                     Enter a Strong's reference code or type a common KJV English word above to scan the lexicon data.
                 </p>
-                <p class="greek-text mt-3"><strong>Derivation / Origin Etymology:</strong></p>
-                <p id="study-notes" class="text-muted italic ps-3 bg-white p-2 rounded">---</p>
+                <p class="greek-text mt-3 text-start"><strong>Derivation / Origin Etymology:</strong></p>
+                <p id="study-notes" class="text-muted italic ps-3 bg-white p-2 rounded text-start">---</p>
             </div>
         </div>
     </div>
     
-    <!-- Fixed explicit path to Bootstrap script with CDN fallback redundancy -->
-    <script src="https://jsdelivr.net"></script>
+    <!-- Explicit dictionary file source references -->
+    <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
+    <script src="../assets/js/strongs-greek-dictionary.js"></script>
+
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
         const searchBtn = document.getElementById("search-btn");
         const resultsContainer = document.getElementById("results-selector-container");
         const resultsSelector = document.getElementById("results-selector");
-        const loadingIndicator = document.getElementById("loading-indicator");
 
         const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
         selector.value = savedLanguage;
 
-        let dictionaryCache = { greek: null, hebrew: null };
-
-        /**
-         * CDN-Backed Fail-Safe Database Engine
-         * Fixed: Corrected domain paths using open-source raw repository links.
-         */
-        async function fetchAndParseDictionary(lang) {
-            if (dictionaryCache[lang]) return dictionaryCache[lang];
-            
-            loadingIndicator.style.display = "block";
-            
-            const url = lang === "greek" 
-                ? "https://githubusercontent.com"
-                : "https://githubusercontent.com";
-            
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP Error Status: ${response.status}`);
-                
-                const data = await response.json();
-                dictionaryCache[lang] = data;
-                return data;
-            } catch (err) {
-                console.error("Concordance Fetch Pipeline Error:", err);
-                alert(`Error: Failed to load ${lang} data from cloud repository registry.`);
-                return null;
-            } finally {
-                loadingIndicator.style.display = "none";
+        // Automatically map references to the global dictionary objects loaded by your .js files
+        function getActiveDictionary(lang) {
+            if (lang === "greek") {
+                return window.strongsGreekDictionary || window.greekDictionary || null;
+            } else {
+                return window.strongsHebrewDictionary || window.hebrewDictionary || null;
             }
         }
 
-        async function performSearch() {
+        function performSearch() {
             const query = strongsInput.value.trim();
             if (!query) return;
 
             const lang = selector.value;
             localStorage.setItem("studyLanguage", lang);
             
-            const dict = await fetchAndParseDictionary(lang);
-            if (!dict) return;
+            const dict = getActiveDictionary(lang);
+            if (!dict) {
+                alert(`Error: Dictionary data object for ${lang} is missing or not declared inside its source script.`);
+                return;
+            }
 
             resultsContainer.style.display = "none";
             resultsSelector.innerHTML = "";
@@ -144,6 +120,7 @@
                 const digits = query.replace(/\D/g, "");
                 const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
                 
+                // Fallbacks to handle various dictionary object formatting keys (e.g., "G3056", "3056", or 3056)
                 const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                 
                 if (entry) {
@@ -165,87 +142,95 @@
                 const entry = dict[key];
                 if (!entry) continue;
 
+                // Flatten all fields of the dictionary entry to search for the English keyword
                 const searchableText = Object.values(entry)
                     .filter(val => typeof val === 'string')
                     .join(' ')
                     .toLowerCase();
 
                 if (searchableText.includes(lowerWord)) {
-                    const numericKey = key.replace(/\D/g, "");
-                    matches.push({ id: numericKey, data: entry });
+                    const cleanId = key.replace(/\D/g, "");
+                    matches.push({ id: cleanId, key: key, data: entry });
                 }
             }
 
             if (matches.length === 0) {
-                alert(`No lexicon items found matching the KJV word "${englishWord}".`);
+                alert(`No entries matching the word "${englishWord}" were found.`);
                 return;
             }
 
             if (matches.length === 1) {
-                renderWordEntry(lang, matches.id, matches.data);
+                renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
+                // Populate dropdown menu if multiple entries contain the searched word
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
-
+                
+                // Build a blank placeholder row choice
+                resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
+                
                 matches.forEach(match => {
+                    const wordLabel = match.data.word || match.data.lemma || "Word";
+                    const shortMeaning = match.data.definition || match.data.meaning || "";
+                    const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
+                    
                     const option = document.createElement("option");
-                    option.value = match.id;
-                    
-                    const wordText = match.data.lemma || match.data.word || match.data.text || "Unknown";
-                    const rawDef = match.data.strongs_def || match.data.definition || match.data.meaning || match.data.kjv_def || "";
-                    const shortSnippet = rawDef.substring(0, 70) + "...";
-                    
-                    const prefix = lang === "greek" ? "G" : "H";
-                    option.textContent = `[${prefix}${match.id}] ${wordText} — ${shortSnippet}`;
-                    option.dataset.entryPayload = JSON.stringify(match.data);
+                    option.value = match.key;
+                    option.textContent = `[${match.key}] ${wordLabel} - ${trimMeaning}`;
                     resultsSelector.appendChild(option);
                 });
 
-                renderWordEntry(lang, matches[0].id, matches[0].data);
+                // Clear previous entries out of active view while selection is pending
+                clearDisplayFields();
             }
         }
 
-        function renderWordEntry(lang, numberString, entry) {
+        function renderWordEntry(lang, idStr, entry) {
             const prefix = lang === "greek" ? "G" : "H";
-            document.getElementById("section-title").textContent = lang === "greek" ? "Greek Lexicon View" : "Hebrew Lexicon View";
+            document.getElementById("study-strongs").textContent = `${prefix}${idStr}`;
             
-            const word = entry.lemma || entry.word || entry.text || "N/A";
-            const translit = entry.translit || entry.transliteration || entry.pronunciation || "";
-            const definition = entry.strongs_def || entry.definition || entry.meaning || entry.kjv_def || "No text definition mapped.";
-            const derivation = entry.derivation || entry.notes || entry.origin || "No derivation properties logged.";
-
-            document.getElementById("study-word").textContent = word;
-            document.getElementById("study-translit").textContent = translit ? `Transliteration: [${translit}]` : "";
-            document.getElementById("study-strongs").textContent = `${prefix}${numberString}`;
-            document.getElementById("study-meaning").textContent = definition;
-            document.getElementById("study-notes").textContent = derivation;
+            // Handle common entry property variations (lemma vs word, definition vs meaning)
+            document.getElementById("study-word").textContent = entry.word || entry.lemma || "---";
+            document.getElementById("study-translit").textContent = entry.transliteration || entry.translit || entry.pronunciation || "";
+            document.getElementById("study-meaning").textContent = entry.definition || entry.meaning || entry.description || "No definition parsed.";
+            document.getElementById("study-notes").textContent = entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
+            
+            document.getElementById("section-title").textContent = lang === "greek" ? "Greek Word Study" : "Hebrew Word Study";
         }
 
-        resultsSelector.addEventListener("change", function() {
-            const selectedOption = resultsSelector.options[resultsSelector.selectedIndex];
-            if (selectedOption && selectedOption.dataset.entryPayload) {
-                const entryData = JSON.parse(selectedOption.dataset.entryPayload);
-                renderWordEntry(selector.value, selectedOption.value, entryData);
-            }
-        });
-
-        function handleLanguageReset() {
-            resultsContainer.style.display = "none";
-            resultsSelector.innerHTML = "";
-            const lang = selector.value;
-            localStorage.setItem("studyLanguage", lang);
-            
-            strongsInput.value = lang === "greek" ? "3056" : "7965";
-            performSearch();
+        function clearDisplayFields() {
+            document.getElementById("study-strongs").textContent = "---";
+            document.getElementById("study-word").textContent = "---";
+            document.getElementById("study-translit").textContent = "";
+            document.getElementById("study-meaning").textContent = "Select an entry from the dropdown above to display details.";
+            document.getElementById("study-notes").textContent = "---";
         }
-
-        selector.addEventListener("change", handleLanguageReset);
+        // -----------------------------
+        // Event Listeners
+        // -----------------------------
         searchBtn.addEventListener("click", performSearch);
+        
         strongsInput.addEventListener("keypress", (e) => {
             if (e.key === "Enter") performSearch();
         });
-
-        setTimeout(handleLanguageReset, 200); 
-    </script>
+        
+        selector.addEventListener("change", (e) => {
+            localStorage.setItem("studyLanguage", e.target.value);
+            resultsContainer.style.display = "none";
+            clearDisplayFields();
+        });
+        
+        resultsSelector.addEventListener("change", (e) => {
+            const key = e.target.value;
+            if (!key) return;
+            
+            const lang = selector.value;
+            const dict = getActiveDictionary(lang);
+            if (dict && dict[key]) {
+                const cleanId = key.replace(/\D/g, "");
+                renderWordEntry(lang, cleanId, dict[key]);
+            }
+        });
+    /script>
 </body>
 </html>
