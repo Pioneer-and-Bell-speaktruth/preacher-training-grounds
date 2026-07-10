@@ -35,20 +35,21 @@
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <label class="form-label fw-bold">Testament / Language:</label>
-                    <select id="language-selector" class="form-select">
-                        <option value="hebrew">Hebrew (Old Testament)</option>
-                        <option value="greek" selected>Greek (New Testament)</option>
-                    </select>
+                <select id="language-selector" class="form-select">
+                    <option value="hebrew">Hebrew (Old Testament)</option>
+                    <option value="greek" selected>Greek (New Testament)</option>
+                </select>
             </div>
             <div class="col-md-8">
                 <label class="form-label fw-bold">Search Strong's Number or KJV Translation Word:</label>
-                    <div class="input-group">
-                        <input type="text" id="strongs-input" class="form-select" placeholder="e.g., 3056, G3056, or 'word' / 'peace'">
-                        <button id="search-btn" class="btn btn-primary" type="button">Search Concordance</button>
-                    </div>
+                <div class="input-group">
+                    <input type="text" id="strongs-input" class="form-select" placeholder="e.g., 3056, G3056, or 'word' / 'perfect'">
+                    <button id="search-btn" class="btn btn-primary" type="button">Search Concordance</button>
+                </div>
             </div>
         </div>
-                <div id="word-section" class="greek-section">
+
+        <div id="word-section" class="greek-section">
             <h2 class="greek-title mb-3" id="section-title">Word Study</h2>
             <div class="card p-4 shadow-sm text-start">
                 <div class="d-flex justify-content-between align-items-start flex-wrap">
@@ -60,7 +61,7 @@
                 </div>
                 <hr>
                 
-                <!-- Added KJV Usage Track Definition Section -->
+                <!-- KJV Usage Track Definition Section -->
                 <p class="greek-text text-start"><strong>KJV Translation Usage:</strong></p>
                 <p id="study-kjv" class="lh-base fs-5 ps-3 border-start border-3 border-warning bg-white p-3 rounded mb-3 text-start fw-semibold text-secondary">
                     ---
@@ -78,8 +79,9 @@
 
         <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
             <label class="form-label fw-bold text-dark"><span class="badge bg-warning text-dark me-2" id="match-count">0</span> Multiple Dictionary Matches Found. Select Entry:</label>
-                <select id="results-selector" class="form-select border-warning text-start"></select>
+            <select id="results-selector" class="form-select border-warning text-start"></select>
         </div>
+    </div>
     
     <!-- Browser Node-Bridge Patch (Fixes the module is not defined error) -->
     <script>
@@ -89,18 +91,14 @@
     <!-- Explicit dictionary file source references -->
     <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
     <script>
-        // Capture the Hebrew dictionary data from the module bridge
         window.strongsHebrewDictionary = window.module.exports;
-        // Reset the bridge for the Greek dictionary file next
         window.module.exports = {};
     </script>
 
     <script src="../assets/js/strongs-greek-dictionary.js"></script>
     <script>
-        // Capture the Greek dictionary data from the module bridge
         window.strongsGreekDictionary = window.module.exports;
     </script>
-
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
@@ -111,7 +109,6 @@
         const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
         selector.value = savedLanguage;
 
-        // Automatically map references to the global dictionary objects loaded by your .js files
         function getActiveDictionary(lang) {
             if (lang === "greek") {
                 return window.strongsGreekDictionary || window.greekDictionary || null;
@@ -142,7 +139,6 @@
                 const digits = query.replace(/\D/g, "");
                 const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
                 
-                // Fallbacks to handle various dictionary object formatting keys (e.g., "G3056", "3056")
                 const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                 
                 if (entry) {
@@ -156,7 +152,7 @@
         }
 
         // -------------------------------------------------------------
-        // FIXED ENGLISH SEARCH ENGINE
+        // FULLY REPAIRED ENGLISH SEARCH ENGINE
         // -------------------------------------------------------------
         function searchByEnglishWord(lang, englishWord, dict) {
             const lowerWord = englishWord.toLowerCase();
@@ -167,7 +163,6 @@
                 const entry = dict[key];
                 if (!entry) continue;
 
-                // Explicitly target text fields to prevent object flattening errors
                 const strongsDef = (entry.strongs_def || "").toLowerCase();
                 const kjvDef = (entry.kjv_def || entry.kjv_usage || "").toLowerCase();
                 const definition = (entry.definition || entry.meaning || "").toLowerCase();
@@ -178,7 +173,7 @@
                     definition.includes(lowerWord) || 
                     lemma.includes(lowerWord)) {
                     
-                    const cleanId = key.replace(/\D/g, ""); // Keep numeric segment separate for display badges
+                    const cleanId = key.replace(/\D/g, "");
                     matches.push({ id: cleanId, key: key, data: entry });
                 }
             }
@@ -189,14 +184,12 @@
             }
 
             if (matches.length === 1) {
-                // SUCCESS REALIGNMENT FIX: Pulls data properties explicitly from index row 0 of the results array list
+                // FIXED ARRAY PROPERTY ACCESSIBILITY: Pulls strictly from index entry 0
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
-                // Populate dropdown menu if multiple entries contain the searched word (like "perfect")
                 document.getElementById("match-count").textContent = matches.length;
                 resultsContainer.style.display = "block";
                 
-                // Build a blank placeholder row choice
                 resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
                 
                 matches.forEach(match => {
@@ -205,12 +198,11 @@
                     const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
                     
                     const option = document.createElement("option");
-                    option.value = match.key; // Keep intact (e.g., passes "G5046" cleanly)
+                    option.value = match.key;
                     option.textContent = `[${match.key}] ${wordLabel} - ${trimMeaning}`;
                     resultsSelector.appendChild(option);
                 });
 
-                // Clear previous entries out of active view while selection is pending
                 clearDisplayFields();
             }
         }
@@ -219,27 +211,22 @@
             const prefix = lang === "greek" ? "G" : "H";
             document.getElementById("study-strongs").textContent = `${prefix}${idStr}`;
             
-            // 1. Map Lemma/Word
             document.getElementById("study-word").textContent = entry.lemma || entry.word || "---";
             
-            // 2. Map Transliteration (Open Scriptures maps 'xlit' and 'pron' values)
             const translitData = entry.xlit || entry.transliteration || entry.translit || "";
             const pronData = entry.pron || entry.pronunciation || "";
             document.getElementById("study-translit").textContent = 
                 (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
             
-            // 3. Map KJV Translation Usage Matrix Definition Space
             let kjvString = entry.kjv_def || entry.kjv_usage || "";
             if (kjvString.startsWith(":--")) {
                 kjvString = kjvString.replace(/^:--/, "").trim();
             }
             document.getElementById("study-kjv").textContent = kjvString || "No specific isolated KJV translations cataloged.";
 
-            // 4. Map Lexicon Definition & Usage (Maps 'strongs_def' key parameters)
             document.getElementById("study-meaning").textContent = 
                 entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
             
-            // 5. Map Derivation / Origin Etymology
             document.getElementById("study-notes").textContent = 
                 entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
             
@@ -277,7 +264,6 @@
             const lang = selector.value;
             const dict = getActiveDictionary(lang);
             if (dict && dict[key]) {
-                // FIXED KEY MATCHING: Keeps character prefix letters intact so "G5046" matches your file dictionary keys perfectly
                 const cleanId = key.replace(/\D/g, "");
                 renderWordEntry(lang, cleanId, dict[key]);
             }
