@@ -35,3 +35,4 @@ const sectionalPlanHTML = `
 
 // DOM Injection Logic Example (Uncomment to use)
 // document.getElementById('secret-text').innerHTML = sectionalPlanHTML;
+window.sectionalPlanHTML = sectionalPlanHTML;
