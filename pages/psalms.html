@@ -33,37 +33,31 @@
 
     </div>
 
-    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Update your main layout container in the HTML body to match this grid: -->
+<div class="container py-4">
+    <h1 class="mb-4">Psalms for the Preacher</h1>
+    <div id="psalms-list" class="d-grid gap-3" style="max-width: 500px;"></div>
+</div>
 
-    <script>
-        // ---------------------------------------------------
-        // Load psalms.json (static fetch)
-        // ---------------------------------------------------
-        async function loadPsalms() {
-            const response = await fetch("../data/psalms.json");
-            const verses = await response.json();
-
-            const list = document.getElementById("psalms-list");
-
-            verses.forEach((v, index) => {
-                const card = document.createElement("div");
-                card.classList.add("psalms-card");
-
-                card.innerHTML = `
-                    <div class="psalms-ref">${v.ref}</div>
-                    <div class="psalms-theme">${v.theme}</div>
-                `;
-
-                card.addEventListener("click", () => {
-                    sessionStorage.setItem("currentVerse", JSON.stringify(v));
-                    window.location.href = "verse-detail.html";
-                });
-
-                list.appendChild(card);
-            });
-        }
-
-        loadPsalms();
-    </script>
+<script>
+    // Locate your dynamic loop for rendering chapters/verses:
+    const list = document.getElementById("psalms-list");
+    
+    // Replace your old loop block with this left-aligned button engine:
+    psalmsArray.forEach(psalm => {
+        const button = document.createElement("button");
+        button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+        
+        button.innerHTML = `
+            <span class="fw-bold">${psalm.title || psalm}</span>
+        `;
+        
+        button.addEventListener("click", () => {
+            // Keep your exact existing navigation/modal logic here
+        });
+        
+        list.appendChild(button);
+    });
+</script>
 </body>
 </html>
