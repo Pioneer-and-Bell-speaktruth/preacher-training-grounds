@@ -75,9 +75,25 @@
         </div>
     </div>
     
+    <!-- Browser Node-Bridge Patch (Fixes the module is not defined error) -->
+    <script>
+        window.module = { exports: {} };
+    </script>
+
     <!-- Explicit dictionary file source references -->
     <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
+    <script>
+        // Capture the Hebrew dictionary data from the module bridge
+        window.strongsHebrewDictionary = window.module.exports;
+        // Reset the bridge for the Greek dictionary file next
+        window.module.exports = {};
+    </script>
+
     <script src="../assets/js/strongs-greek-dictionary.js"></script>
+    <script>
+        // Capture the Greek dictionary data from the module bridge
+        window.strongsGreekDictionary = window.module.exports;
+    </script>
 
     <script>
         const selector = document.getElementById("language-selector");
@@ -231,6 +247,6 @@
                 renderWordEntry(lang, cleanId, dict[key]);
             }
         });
-    /script>
+    </script>
 </body>
 </html>
