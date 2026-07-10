@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Enforces instant mobile layout sizing and touch event scaling -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preacher Training Grounds</title>
 
-    <!-- Bootswatch Darkly Theme Stylesheet --> 
+    <!-- Native stylesheet load so pages don't flicker white while loading -->
     <link rel="stylesheet" href="/preacher-training-grounds/assets/dist/css/bootstrap(darkly).min.css"> 
 </head>
 <body class="bg-dark text-light">
 
-    <!-- Global Navbar (Built right into the page so it can never fail to load) --> 
+    <!-- Global Navbar (Hardcoded so it never relies on a slow network fetch) --> 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4"> 
       <div class="container"> 
         <a class="navbar-brand" href="/preacher-training-grounds/">Home</a> 
@@ -57,7 +58,7 @@
         </a>
     </div>
 
-    <!-- Official Bootstrap 5 JavaScript Bundle (Enables the 3-line mobile menu) -->
+    <!-- Official Bootstrap 5 JavaScript Engine (Tied natively to the button layout) -->
     <script src="https://jsdelivr.net" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 
 </body>
