@@ -33,37 +33,28 @@
 
     </div>
 
-    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+   <div class="container py-4">
+    <h1 class="mb-4">Proverbs for the Preacher</h1>
+    <div id="proverbs-list" class="d-grid gap-3" style="max-width: 500px;"></div>
+</div>
 
-    <script>
-        // ---------------------------------------------------
-        // Load proverbs.json (static fetch)
-        // ---------------------------------------------------
-        async function loadProverbs() {
-            const response = await fetch("../data/proverbs.json");
-            const verses = await response.json();
-
-            const list = document.getElementById("proverbs-list");
-
-            verses.forEach((v, index) => {
-                const card = document.createElement("div");
-                card.classList.add("prov-card");
-
-                card.innerHTML = `
-                    <div class="prov-ref">${v.ref}</div>
-                    <div class="prov-theme">${v.theme}</div>
-                `;
-
-                card.addEventListener("click", () => {
-                    sessionStorage.setItem("currentVerse", JSON.stringify(v));
-                    window.location.href = "verse-detail.html";
-                });
-
-                list.appendChild(card);
-            });
-        }
-
-        loadProverbs();
-    </script>
+<script>
+    const list = document.getElementById("proverbs-list");
+    
+    proverbsArray.forEach(proverb => {
+        const button = document.createElement("button");
+        button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+        
+        button.innerHTML = `
+            <span class="fw-bold">${proverb.title || proverb}</span>
+        `;
+        
+        button.addEventListener("click", () => {
+            // Keep your exact existing navigation/modal logic here
+        });
+        
+        list.appendChild(button);
+    });
+</script>
 </body>
 </html>
