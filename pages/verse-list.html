@@ -27,7 +27,8 @@
 
     <div class="container py-4 vl-container">
 
-        <div id="vl-list"></div>
+        <!-- Vertical grid alignment wrapper stack for left-aligned buttons -->
+        <div id="vl-list" class="d-grid gap-3" style="max-width: 650px;"></div>
 
     </div>
 
@@ -56,26 +57,39 @@
         // Load verses from JSON file
         // ---------------------------------------------------
         async function loadVerses() {
-            const response = await fetch(`../data/${file}.json`);
-            const verses = await response.json();
+            try {
+                const response = await fetch(`../data/${file}.json`);
+                if (!response.ok) throw new Error("Data file could not be found");
+                
+                const verses = await response.json();
 
-            verses.forEach((v, index) => {
-                const card = document.createElement("div");
-                card.classList.add("vl-card");
+                verses.forEach((v, index) => {
+                    // Create a formal HTML button element instead of a structural div card block
+                    const button = document.createElement("button");
+                    
+                    // Bootstrap styles to make it a left-aligned, spacious line item button panel row
+                    button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
 
-                card.innerHTML = `
-                    <div class="vl-ref">${v.ref}</div>
-                    <div class="vl-theme">${v.theme}</div>
-                `;
+                    // Balanced side-by-side flex layout to stack text fields neatly
+                    button.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
+                            <span class="vl-ref fw-bold text-primary">${v.ref}</span>
+                            <span class="vl-theme text-muted small fs-6">${v.theme}</span>
+                        </div>
+                    `;
 
-                card.addEventListener("click", () => {
-                    sessionStorage.setItem("currentVerse", JSON.stringify(v));
-                    sessionStorage.removeItem("randomVerse");
-                    window.location.href = "verse-detail.html";
+                    // Handle verse view routing click events
+                    button.addEventListener("click", () => {
+                        sessionStorage.setItem("currentVerse", JSON.stringify(v));
+                        sessionStorage.removeItem("randomVerse");
+                        window.location.href = "verse-detail.html";
+                    });
+
+                    list.appendChild(button);
                 });
-
-                list.appendChild(card);
-            });
+            } catch (err) {
+                console.error("Verse loading failed:", err);
+            }
         }
 
         loadVerses();
