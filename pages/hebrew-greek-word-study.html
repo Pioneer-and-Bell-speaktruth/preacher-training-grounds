@@ -99,6 +99,7 @@
     <script>
         window.strongsGreekDictionary = window.module.exports;
     </script>
+    
     <script>
         const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
@@ -184,7 +185,7 @@
             }
 
             if (matches.length === 1) {
-                // FIXED ARRAY PROPERTY ACCESSIBILITY: Pulls strictly from index entry 0
+                // FIXED CRITICAL ENGINE CRASH: Accesses row 0 array element parameters explicitly
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
                 document.getElementById("match-count").textContent = matches.length;
@@ -264,8 +265,8 @@
             const lang = selector.value;
             const dict = getActiveDictionary(lang);
             if (dict && dict[key]) {
-                const cleanId = key.replace(/\D/g, "");
-                renderWordEntry(lang, cleanId, dict[key]);
+                // FIXED KEY SELECTION: Retains the explicit key matching rules ("G5046") instead of breaking alpha mappings
+                renderWordEntry(lang, key, dict[key]);
             }
         });
     </script>
