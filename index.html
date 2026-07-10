@@ -2,46 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Enforces mobile phone screen scaling -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preacher Training Grounds</title>
 
-    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
-    <script>
-    fetch("assets/global.html")
-      .then(r => r.text())
-      .then(html => {
-          const template = document.createElement("div");
-          template.innerHTML = html;
-
-          // 1. Inject CSS stylesheet links into <head> (Safe)
-          document.head.append(...template.querySelectorAll("link"));
-
-          // 2. Inject navbar directly into the top of <body>
-          const nav = template.querySelector("nav");
-          if (nav) document.body.prepend(nav);
-
-          // 3. FIXED: Extract scripts and re-create them properly so the browser executes them
-          template.querySelectorAll("script").forEach(oldScript => {
-              const newScript = document.createElement("script");
-              
-              // Copy all attributes (like src, integrity, crossorigin)
-              Array.from(oldScript.attributes).forEach(attr => {
-                  newScript.setAttribute(attr.name, attr.value);
-              });
-              
-              newScript.textContent = oldScript.textContent;
-              
-              // Appending to body guarantees it fires AFTER the navbar elements exist on screen
-              document.body.appendChild(newScript);
-          });
-      });
-    </script>
+    <!-- Native stylesheet load so pages don't flicker white while loading -->
+    <link rel="stylesheet" href="/preacher-training-grounds/assets/dist/css/bootstrap(darkly).min.css">
 </head>
 
 <body class="bg-dark text-light">
 
-    <div class="container mt-4">
+    <!-- Container for dynamic navbar injection -->
+    <div id="global-nav-placeholder"></div>
 
+    <div class="container mt-4">
         <!-- Intro Section -->
         <div class="p-4 mb-4 bg-primary text-light rounded text-center">
             <h1 class="display-5">Welcome to the Preacher Training Grounds</h1>
@@ -55,15 +29,35 @@
                 and strengthening your walk with Christ.
             </p>
         </div>
-
     </div>
-    
+        
     <!-- Church Website Button -->
     <div class="container text-center mt-5 mb-4">
-        <a href="https://pioneer-and-bell-speaktruth.github.io/" 
-           class="btn btn-lg btn-secondary">
+        <a href="https://github.io" class="btn btn-lg btn-secondary">
             Pioneer & Bell Website
         </a>
     </div>
+
+    <!-- 1. Load the Bootstrap JS engine directly from the official CDN link -->
+    <script src="https://jsdelivr.net" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+    <!-- 2. Secure Fetch Script: Pulls the layout, drops it in, then explicitly activates the mobile menu -->
+    <script>
+    fetch("assets/global.html")
+      .then(response => response.text())
+      .then(htmlContent => {
+          const placeholder = document.getElementById("global-nav-placeholder");
+          placeholder.innerHTML = htmlContent;
+
+          // CRITICAL FIX: Manually wake up the mobile menu toggle once the HTML has hit the DOM
+          const togglerButton = placeholder.querySelector('.navbar-toggler');
+          if (togglerButton) {
+              new bootstrap.Collapse(placeholder.querySelector('.navbar-collapse'), {
+                  toggle: false
+              });
+          }
+      })
+      .catch(error => console.error("Error loading navbar components:", error));
+    </script>
 </body>
 </html>
