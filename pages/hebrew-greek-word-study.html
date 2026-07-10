@@ -100,7 +100,7 @@
         window.strongsGreekDictionary = window.module.exports;
     </script>
     
-    <script>
+       <script>
         // Wrap everything inside an event listener to ensure the HTML elements are fully loaded first!
         document.addEventListener("DOMContentLoaded", () => {
             const selector = document.getElementById("language-selector");
@@ -145,6 +145,7 @@
                     const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
                     
                     if (entry) {
+                        // Pass the raw digits cleanly to avoid double prefix padding
                         renderWordEntry(lang, digits, entry);
                     } else {
                         alert(`Strong's number [${lookupKey}] was not found in the database.`);
@@ -184,6 +185,7 @@
                 }
 
                 if (matches.length === 1) {
+                    // FIXED PASSING KEY: Passes matches[0].id (just the digits) to perfectly align with renderWordEntry requirements
                     renderWordEntry(lang, matches[0].id, matches[0].data);
                 } else {
                     document.getElementById("match-count").textContent = matches.length;
@@ -268,6 +270,7 @@
                     const dict = getActiveDictionary(lang);
                     if (dict && dict[key]) {
                         const cleanId = key.replace(/\D/g, "");
+                        // Drops the alphabetical letter before passing it down so the visual badge builds properly
                         renderWordEntry(lang, cleanId, dict[key]);
                     }
                 });
