@@ -29,35 +29,71 @@
 
         <h1 class="psalms-header mb-4">Psalms for the Preacher</h1>
 
-        <div id="psalms-list"></div>
+        <!-- Single, clean vertical grid layout wrapper for left-aligned buttons -->
+        <div id="psalms-list" class="d-grid gap-3" style="max-width: 650px;"></div>
 
     </div>
 
-    <!-- Update your main layout container in the HTML body to match this grid: -->
-<div class="container py-4">
-    <h1 class="mb-4">Psalms for the Preacher</h1>
-    <div id="psalms-list" class="d-grid gap-3" style="max-width: 500px;"></div>
-</div>
+    <script>
+        const list = document.getElementById("psalms-list");
 
-<script>
-    // Locate your dynamic loop for rendering chapters/verses:
-    const list = document.getElementById("psalms-list");
-    
-    // Replace your old loop block with this left-aligned button engine:
-    psalmsArray.forEach(psalm => {
-        const button = document.createElement("button");
-        button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
-        
-        button.innerHTML = `
-            <span class="fw-bold">${psalm.title || psalm}</span>
-        `;
-        
-        button.addEventListener("click", () => {
-            // Keep your exact existing navigation/modal logic here
-        });
-        
-        list.appendChild(button);
-    });
-</script>
+        // Dynamically loads the corresponding data array from your server folder
+        async function loadPsalms() {
+            try {
+                // Fetches the data structure registry file
+                const response = await fetch('../data/psalms.json');
+                if (!response.ok) throw new Error("Psalms data file not found");
+                
+                const psalmsArray = await response.json();
+
+                psalmsArray.forEach(psalm => {
+                    const button = document.createElement("button");
+                    button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+                    
+                    // Support both object strings (psalm.ref) or flat string listings (psalm)
+                    const displayLabel = psalm.ref || psalm.title || psalm;
+                    const displaySubtitle = psalm.theme || "";
+
+                    button.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
+                            <span class="fw-bold text-primary">${displayLabel}</span>
+                            ${displaySubtitle ? `<span class="text-muted small fs-6">${displaySubtitle}</span>` : ''}
+                        </div>
+                    `;
+                    
+                    button.addEventListener("click", () => {
+                        // Store selection securely before forwarding to your detail viewing card
+                        sessionStorage.setItem("currentVerse", JSON.stringify(psalm));
+                        sessionStorage.removeItem("randomVerse");
+                        window.location.href = "verse-detail.html";
+                    });
+                    
+                    list.appendChild(button);
+                });
+            } catch (err) {
+                console.warn("Falling back to local array loading state:", err);
+                // Fail-safe: if you hardcoded data variables inside your script previously, run that map here instead
+                if (typeof psalmsArray !== 'undefined') {
+                    renderLocalArray(psalmsArray);
+                }
+            }
+        }
+
+        function renderLocalArray(arr) {
+            list.innerHTML = "";
+            arr.forEach(psalm => {
+                const button = document.createElement("button");
+                button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+                button.innerHTML = `<span class="fw-bold">${psalm.title || psalm}</span>`;
+                button.addEventListener("click", () => {
+                    window.location.href = "verse-detail.html";
+                });
+                list.appendChild(button);
+            });
+        }
+
+        // Initialize loading procedure
+        loadPsalms();
+    </script>
 </body>
 </html>
