@@ -1,4 +1,6 @@
-// Chronological Bible Study Plan HTML Export
+// =========================================================================
+// 1. DYNAMIC LAYOUT TEXT STRING
+// =========================================================================
 const chronologicalPlanHTML = `
 <!-- Weeks 1–3 — Creation to Patriarchs -->
 <h4>Weeks 1–3 — Creation to Patriarchs</h4>
@@ -168,6 +170,64 @@ const chronologicalPlanHTML = `
 <p>  - Revelation</p>
 `;
 
-// DOM Injection Logic Example (Uncomment to use)
-// document.getElementById('secret-text').innerHTML = chronologicalPlanHTML;
 window.chronologicalPlanHTML = chronologicalPlanHTML;
+
+// =========================================================================
+// 2. STRUCTURAL DATA ARRAY (Required to drive the tracker dashboard)
+// =========================================================================
+const chronologicalPlan = [
+    { ot: ["Genesis 1–11"], nt: [] }, // Week 1
+    { ot: ["Job"], nt: [] }, // Week 2
+    { ot: ["Genesis 12–50"], nt: [] }, // Week 3
+    { ot: ["Exodus 1–18"], nt: [] }, // Week 4
+    { ot: ["Exodus 19–40"], nt: [] }, // Week 5
+    { ot: ["Leviticus"], nt: [] }, // Week 6
+    { ot: ["Numbers"], nt: [] }, // Week 7
+    { ot: ["Deuteronomy"], nt: [] }, // Week 8
+    { ot: ["Joshua"], nt: [] }, // Week 9
+    { ot: ["Judges"], nt: [] }, // Week 10
+    { ot: ["Ruth"], nt: [] }, // Week 11
+    { ot: ["1 Samuel & early David Psalms"], nt: [] }, // Week 12
+    { ot: ["2 Samuel & middle David Psalms"], nt: [] }, // Week 13
+    { ot: ["1 Chronicles 1–20 & late David Psalms"], nt: [] }, // Week 14
+    { ot: ["1 Chronicles 21–29 & temple Psalms"], nt: [] }, // Week 15
+    { ot: ["1 Kings 1–11 (Solomon era)"], nt: [] }, // Week 16
+    { ot: ["2 Chronicles 1–9 & dedication Psalms"], nt: [] }, // Week 17
+    { ot: ["1 Kings 12–16 & Prophet Obadiah & Korah Psalms"], nt: [] }, // Week 18
+    { ot: ["1 Kings 17–22 & Prophet Elijah & Asaph Psalms"], nt: [] }, // Week 19
+    { ot: ["2 Kings 1–10 & Prophet Elisha"], nt: [] }, // Week 20
+    { ot: ["2 Kings 11–14 & Prophets Joel/Jonah & worship Psalms"], nt: [] }, // Week 21
+    { ot: ["2 Kings 15 & Prophets Amos/Hosea & Moses Psalm 90"], nt: [] }, // Week 22
+    { ot: ["2 Chronicles 10–28 & Prophet Micah & Psalm 91"], nt: [] }, // Week 23
+    { ot: ["2 Kings 16–20 & Prophet Isaiah 1–39 & deliverance Psalms"], nt: [] }, // Week 24
+    { ot: ["Prophet Isaiah 40–66 & Psalm 76"], nt: [] }, // Week 25
+    { ot: ["Prophet Nahum"], nt: [] }, // Week 26
+    { ot: ["Prophets Habakkuk & Zephaniah"], nt: [] }, // Week 27
+    { ot: ["2 Kings 21–23 & 2 Chronicles 29–35"], nt: [] }, // Week 28
+    { ot: ["Prophet Jeremiah 1–29 & Exile Psalms"], nt: [] }, // Week 29
+    { ot: ["Prophet Jeremiah 30–52 & Lamentations"], nt: [] }, // Week 30
+    { ot: ["2 Kings 24–25 & Prophet Ezekiel 1–24"], nt: [] }, // Week 31
+    { ot: ["Prophet Ezekiel 25–48 & Psalm 102"], nt: [] }, // Week 32
+    { ot: ["Prophet Daniel 1–6 & Psalm 130"], nt: [] }, // Week 33
+    { ot: ["Prophet Daniel 7–12"], nt: [] }, // Week 34
+    { ot: ["Ezra 1–6 & Prophet Haggai"], nt: [] }, // Week 35
+    { ot: ["Ezra 7–10 & Prophet Zechariah"], nt: [] }, // Week 36
+    { ot: ["Nehemiah & Restoration Psalms"], nt: [] }, // Week 37
+    { ot: ["Esther & Prophet Malachi"], nt: [] }, // Week 38
+    { ot: [], nt: ["Matthew"] }, // Week 39
+    { ot: [], nt: ["Mark"] }, // Week 40
+    { ot: [], nt: ["Luke"] }, // Week 41
+    { ot: [], nt: ["John"] }, // Week 42
+    { ot: [], nt: ["Acts 1–12"] }, // Week 43
+    { ot: [], nt: ["Acts 13–28 & foundational Psalms"] }, // Week 44
+    { ot: [], nt: ["Galatians"] }, // Week 45
+    { ot: [], nt: ["1 & 2 Thessalonians"] }, // Week 46
+    { ot: [], nt: ["1 & 2 Corinthians"] }, // Week 47
+    { ot: [], nt: ["Romans"] }, // Week 48
+    { ot: [], nt: ["Prison Epistles (Eph, Phil, Col, Phlm)"] }, // Week 49
+    { ot: [], nt: ["Pastoral Epistles (1-2 Tim, Titus)"] }, // Week 50
+    { ot: [], nt: ["General Epistles (James, 1-2 Pet, Jude)"] }, // Week 51
+    { ot: [], nt: ["Hebrews, 1-3 John, Revelation"] } // Week 52
+];
+
+window.chronologicalPlan = chronologicalPlan;
