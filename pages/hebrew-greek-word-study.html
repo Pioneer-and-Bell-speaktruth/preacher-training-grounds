@@ -16,173 +16,176 @@
     </script>
     
     <script>
-        const selector = document.getElementById("language-selector");
-        const strongsInput = document.getElementById("strongs-input");
-        const searchBtn = document.getElementById("search-btn");
-        const resultsContainer = document.getElementById("results-selector-container");
-        const resultsSelector = document.getElementById("results-selector");
+        // Wrap everything inside an event listener to ensure the HTML elements are fully loaded first!
+        document.addEventListener("DOMContentLoaded", () => {
+            const selector = document.getElementById("language-selector");
+            const strongsInput = document.getElementById("strongs-input");
+            const searchBtn = document.getElementById("search-btn");
+            const resultsContainer = document.getElementById("results-selector-container");
+            const resultsSelector = document.getElementById("results-selector");
 
-        const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
-        selector.value = savedLanguage;
+            const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
+            if (selector) selector.value = savedLanguage;
 
-        function getActiveDictionary(lang) {
-            if (lang === "greek") {
-                return window.strongsGreekDictionary || window.greekDictionary || null;
-            } else {
-                return window.strongsHebrewDictionary || window.hebrewDictionary || null;
-            }
-        }
-
-        function performSearch() {
-            const query = strongsInput.value.trim();
-            if (!query) return;
-
-            const lang = selector.value;
-            localStorage.setItem("studyLanguage", lang);
-            
-            const dict = getActiveDictionary(lang);
-            if (!dict) {
-                alert(`Error: Dictionary data object for ${lang} is missing or not declared inside its source script.`);
-                return;
-            }
-
-            resultsContainer.style.display = "none";
-            resultsSelector.innerHTML = "";
-
-            const containsDigits = /\d+/.test(query);
-
-            if (containsDigits) {
-                const digits = query.replace(/\D/g, "");
-                const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
-                
-                const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
-                
-                if (entry) {
-                    renderWordEntry(lang, digits, entry);
+            function getActiveDictionary(lang) {
+                if (lang === "greek") {
+                    return window.strongsGreekDictionary || window.greekDictionary || null;
                 } else {
-                    alert(`Strong's number [${lookupKey}] was not found in the database.`);
-                }
-            } else {
-                searchByEnglishWord(lang, query, dict);
-            }
-        }
-
-        // -------------------------------------------------------------
-        // FULLY REPAIRED ENGLISH SEARCH ENGINE
-        // -------------------------------------------------------------
-        function searchByEnglishWord(lang, englishWord, dict) {
-            const lowerWord = englishWord.toLowerCase();
-            const matches = [];
-
-            for (const key in dict) {
-                if (!dict.hasOwnProperty(key)) continue;
-                const entry = dict[key];
-                if (!entry) continue;
-
-                const strongsDef = (entry.strongs_def || "").toLowerCase();
-                const kjvDef = (entry.kjv_def || entry.kjv_usage || "").toLowerCase();
-                const definition = (entry.definition || entry.meaning || "").toLowerCase();
-                const lemma = (entry.lemma || entry.word || "").toLowerCase();
-
-                if (strongsDef.includes(lowerWord) || 
-                    kjvDef.includes(lowerWord) || 
-                    definition.includes(lowerWord) || 
-                    lemma.includes(lowerWord)) {
-                    
-                    const cleanId = key.replace(/\D/g, "");
-                    matches.push({ id: cleanId, key: key, data: entry });
+                    return window.strongsHebrewDictionary || window.hebrewDictionary || null;
                 }
             }
 
-            if (matches.length === 0) {
-                alert(`No entries matching the word "${englishWord}" were found.`);
-                return;
+            function performSearch() {
+                const query = strongsInput.value.trim();
+                if (!query) return;
+
+                const lang = selector.value;
+                localStorage.setItem("studyLanguage", lang);
+                
+                const dict = getActiveDictionary(lang);
+                if (!dict) {
+                    alert(`Error: Dictionary data object for ${lang} is missing or not declared inside its source script.`);
+                    return;
+                }
+
+                resultsContainer.style.display = "none";
+                resultsSelector.innerHTML = "";
+
+                const containsDigits = /\d+/.test(query);
+
+                if (containsDigits) {
+                    const digits = query.replace(/\D/g, "");
+                    const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
+                    
+                    const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
+                    
+                    if (entry) {
+                        renderWordEntry(lang, digits, entry);
+                    } else {
+                        alert(`Strong's number [${lookupKey}] was not found in the database.`);
+                    }
+                } else {
+                    searchByEnglishWord(lang, query, dict);
+                }
             }
 
-            if (matches.length === 1) {
-                // FIXED CRITICAL ENGINE CRASH: Accesses row 0 array element parameters explicitly
-                renderWordEntry(lang, matches[0].id, matches[0].data);
-            } else {
-                document.getElementById("match-count").textContent = matches.length;
-                resultsContainer.style.display = "block";
-                
-                resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
-                
-                matches.forEach(match => {
-                    const wordLabel = match.data.lemma || match.data.word || "Word";
-                    const shortMeaning = match.data.strongs_def || match.data.definition || match.data.meaning || "";
-                    const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
+            function searchByEnglishWord(lang, englishWord, dict) {
+                const lowerWord = englishWord.toLowerCase();
+                const matches = [];
+
+                for (const key in dict) {
+                    if (!dict.hasOwnProperty(key)) continue;
+                    const entry = dict[key];
+                    if (!entry) continue;
+
+                    const strongsDef = (entry.strongs_def || "").toLowerCase();
+                    const kjvDef = (entry.kjv_def || entry.kjv_usage || "").toLowerCase();
+                    const definition = (entry.definition || entry.meaning || "").toLowerCase();
+                    const lemma = (entry.lemma || entry.word || "").toLowerCase();
+
+                    if (strongsDef.includes(lowerWord) || 
+                        kjvDef.includes(lowerWord) || 
+                        definition.includes(lowerWord) || 
+                        lemma.includes(lowerWord)) {
+                        
+                        const cleanId = key.replace(/\D/g, "");
+                        matches.push({ id: cleanId, key: key, data: entry });
+                    }
+                }
+
+                if (matches.length === 0) {
+                    alert(`No entries matching the word "${englishWord}" were found.`);
+                    return;
+                }
+
+                if (matches.length === 1) {
+                    renderWordEntry(lang, matches[0].id, matches[0].data);
+                } else {
+                    document.getElementById("match-count").textContent = matches.length;
+                    resultsContainer.style.display = "block";
                     
-                    const option = document.createElement("option");
-                    option.value = match.key;
-                    option.textContent = `[${match.key}] ${wordLabel} - ${trimMeaning}`;
-                    resultsSelector.appendChild(option);
+                    resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
+                    
+                    matches.forEach(match => {
+                        const wordLabel = match.data.lemma || match.data.word || "Word";
+                        const shortMeaning = match.data.strongs_def || match.data.definition || match.data.meaning || "";
+                        const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
+                        
+                        const option = document.createElement("option");
+                        option.value = match.key;
+                        option.textContent = `[${match.key}] ${wordLabel} - ${trimMeaning}`;
+                        resultsSelector.appendChild(option);
+                    });
+
+                    clearDisplayFields();
+                }
+            }
+
+            function renderWordEntry(lang, idStr, entry) {
+                const prefix = lang === "greek" ? "G" : "H";
+                document.getElementById("study-strongs").textContent = `${prefix}${idStr}`;
+                document.getElementById("study-word").textContent = entry.lemma || entry.word || "---";
+                
+                const translitData = entry.xlit || entry.transliteration || entry.translit || "";
+                const pronData = entry.pron || entry.pronunciation || "";
+                document.getElementById("study-translit").textContent = 
+                    (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
+                
+                let kjvString = entry.kjv_def || entry.kjv_usage || "";
+                if (kjvString.startsWith(":--")) {
+                    kjvString = kjvString.replace(/^:--/, "").trim();
+                }
+                document.getElementById("study-kjv").textContent = kjvString || "No specific isolated KJV translations cataloged.";
+
+                document.getElementById("study-meaning").textContent = 
+                    entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
+                
+                document.getElementById("study-notes").textContent = 
+                    entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
+                
+                document.getElementById("section-title").textContent = lang === "greek" ? "Greek Word Study" : "Hebrew Word Study";
+            }
+
+            function clearDisplayFields() {
+                document.getElementById("study-strongs").textContent = "---";
+                document.getElementById("study-word").textContent = "---";
+                document.getElementById("study-translit").textContent = "";
+                document.getElementById("study-kjv").textContent = "---";
+                document.getElementById("study-meaning").textContent = "Select an entry from the dropdown above to display details.";
+                document.getElementById("study-notes").textContent = "---";
+            }
+
+            // -----------------------------
+            // Event Listeners
+            // -----------------------------
+            if (searchBtn) searchBtn.addEventListener("click", performSearch);
+            
+            if (strongsInput) {
+                strongsInput.addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") performSearch();
                 });
-
-                clearDisplayFields();
             }
-        }
 
-        function renderWordEntry(lang, idStr, entry) {
-            const prefix = lang === "greek" ? "G" : "H";
-            document.getElementById("study-strongs").textContent = `${prefix}${idStr}`;
-            
-            document.getElementById("study-word").textContent = entry.lemma || entry.word || "---";
-            
-            const translitData = entry.xlit || entry.transliteration || entry.translit || "";
-            const pronData = entry.pron || entry.pronunciation || "";
-            document.getElementById("study-translit").textContent = 
-                (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
-            
-            let kjvString = entry.kjv_def || entry.kjv_usage || "";
-            if (kjvString.startsWith(":--")) {
-                kjvString = kjvString.replace(/^:--/, "").trim();
+            if (selector) {
+                selector.addEventListener("change", (e) => {
+                    localStorage.setItem("studyLanguage", e.target.value);
+                    resultsContainer.style.display = "none";
+                    clearDisplayFields();
+                });
             }
-            document.getElementById("study-kjv").textContent = kjvString || "No specific isolated KJV translations cataloged.";
 
-            document.getElementById("study-meaning").textContent = 
-                entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
-            
-            document.getElementById("study-notes").textContent = 
-                entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
-            
-            document.getElementById("section-title").textContent = lang === "greek" ? "Greek Word Study" : "Hebrew Word Study";
-        }
+            if (resultsSelector) {
+                resultsSelector.addEventListener("change", (e) => {
+                    const key = e.target.value;
+                    if (!key) return;
 
-        function clearDisplayFields() {
-            document.getElementById("study-strongs").textContent = "---";
-            document.getElementById("study-word").textContent = "---";
-            document.getElementById("study-translit").textContent = "";
-            document.getElementById("study-kjv").textContent = "---";
-            document.getElementById("study-meaning").textContent = "Select an entry from the dropdown above to display details.";
-            document.getElementById("study-notes").textContent = "---";
-        }
-
-        // -----------------------------
-        // Event Listeners
-        // -----------------------------
-        searchBtn.addEventListener("click", performSearch);
-        
-        strongsInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") performSearch();
-        });
-
-        selector.addEventListener("change", (e) => {
-            localStorage.setItem("studyLanguage", e.target.value);
-            resultsContainer.style.display = "none";
-            clearDisplayFields();
-        });
-
-        resultsSelector.addEventListener("change", (e) => {
-            const key = e.target.value;
-            if (!key) return;
-
-            const lang = selector.value;
-            const dict = getActiveDictionary(lang);
-            if (dict && dict[key]) {
-                // FIXED KEY SELECTION: Retains the explicit key matching rules ("G5046") instead of breaking alpha mappings
-                const cleanId = key.replace(/\D/g, "");
-                renderWordEntry(lang, cleanId, dict[key]);
+                    const lang = selector.value;
+                    const dict = getActiveDictionary(lang);
+                    if (dict && dict[key]) {
+                        const cleanId = key.replace(/\D/g, "");
+                        renderWordEntry(lang, cleanId, dict[key]);
+                    }
+                });
             }
         });
     </script>
