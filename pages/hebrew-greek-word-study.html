@@ -73,7 +73,7 @@
         </div>
     </div>
     
-      <!-- Explicit dictionary file source references (Loads your global variables directly) -->
+    <!-- Explicit dictionary file source references (Loads your global variables directly) -->
     <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
     <script src="../assets/js/strongs-greek-dictionary.js"></script>
 
@@ -128,8 +128,11 @@
                 let englishTranslation = "";
                 if (entry.strongs_def) {
                     // Pull the very first words before the first comma/semicolon for a clean summary
-                    const cleanWords = entry.strongs_def.split(/[;.,]/)[0];
-                    englishTranslation = cleanWords.replace(/[^a-zA-Z\s]/g, "").trim();
+                    const cleanWords = entry.strongs_def.split(/[;.,]/);
+                    // FIXED: Targets the first item [0] of the array list to prevent a crash
+                    if (cleanWords && cleanWords.length > 0) {
+                        englishTranslation = cleanWords[0].replace(/[^a-zA-Z\s]/g, "").trim();
+                    }
                 }
 
                 // Append the discovered English keyword directly alongside the original word format layout
