@@ -29,13 +29,14 @@
 
         <h1 class="st-header mb-4">Sermon Types & Training</h1>
 
-        <div id="types-list"></div>
+        <!-- Vertical grid alignment wrapper stack for left-aligned buttons -->
+        <div id="types-list" class="d-grid gap-3" style="max-width: 500px;"></div>
 
     </div>
 
     <script>
         // ---------------------------------------------------
-        // Sermon types (same as React version)
+        // Sermon types (Updated to Left-Aligned Buttons)
         // ---------------------------------------------------
         const types = [
             { title: "Expository Sermon", screen: "expository.html" },
@@ -47,18 +48,22 @@
         const list = document.getElementById("types-list");
 
         types.forEach(t => {
-            const card = document.createElement("div");
-            card.classList.add("st-card");
+            // Create a formal HTML button element instead of a structural div card block
+            const button = document.createElement("button");
+            
+            // Bootstrap styles to make it a left-aligned, full-width button line structure
+            button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
 
-            card.innerHTML = `
-                <div class="st-card-text">${t.title}</div>
+            button.innerHTML = `
+                <span class="st-card-text fw-bold">${t.title}</span>
             `;
 
-            card.addEventListener("click", () => {
+            // Active redirect route trigger listener hook
+            button.addEventListener("click", () => {
                 window.location.href = t.screen;
             });
 
-            list.appendChild(card);
+            list.appendChild(button);
         });
     </script>
 </body>
