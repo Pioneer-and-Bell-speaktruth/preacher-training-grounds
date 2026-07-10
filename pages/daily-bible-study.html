@@ -25,27 +25,23 @@
 
 <body class="bg-light">
 
-    <div class="container py-4 daily-container">
-                <!-- Plan Selection -->
-        <div class="daily-section mb-4">
-            <h2 class="daily-title">Choose Your Reading Plan</h2>
-
-            <select id="plan-selector" class="form-select py-3">
-               <option value="sectional">Sectional Plan</option>
-               <option value="chronological">Chronological Plan</option>
-            </select>
-
-            <p class="daily-text mt-2">
-                Your selection will automatically update today's reading.
-            </p>
-        </div>
+        <div class="container py-4 daily-container">
+            <!-- Plan Selection -->
+            <div class="daily-section mb-4">
+                <h2 class="daily-title">Choose Your Reading Plan</h2>
         
-        <div id="secret-text" hidden>
-        <h1 class="daily-header text-center mb-4">Sectional Plan</h1>
-        </div>
+                <select id="plan-selector" class="form-select py-3">
+                   <option value="sectional">Sectional Plan</option>
+                   <option value="chronological">Chronological Plan</option>
+                </select>
         
-        <div id="secret-text" hidden>
-        <h1 class="daily-header text-center mb-4">Chronological Plan</h1>
+                <p class="daily-text mt-2">
+                    Your selection will automatically update today's reading.
+                </p>
+            </div>
+            
+            <!-- This single element will hold whichever layout is active -->
+            <div id="secret-text" hidden></div>
         </div>
 
         <!-- Today's Reading -->
