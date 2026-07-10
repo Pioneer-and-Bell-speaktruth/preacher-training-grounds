@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hebrew & Greek Word Study</title>
+    <title>Daily Bible Word Study</title>
     
     <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
     <script>
@@ -30,27 +30,22 @@
 </head>
 <body class="bg-light">
     <div class="container py-4 greek-container">
-        <h1 class="greek-header mb-4">Hebrew & Greek Concordance Study</h1>
+        <h1 class="greek-header mb-2">Daily Original Word Study</h1>
+        <p class="text-muted mb-4">Grow your vocabulary. Refresh the section to draw a completely new biblical term from the lexicons.</p>
         
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Testament / Language:</label>
-                <select id="language-selector" class="form-select">
-                    <option value="hebrew">Hebrew (Old Testament)</option>
-                    <option value="greek" selected>Greek (New Testament)</option>
-                </select>
-            </div>
-            <div class="col-md-8">
-                <label class="form-label fw-bold">Search Strong's Number or KJV Translation Word:</label>
-                <div class="input-group">
-                    <input type="text" id="strongs-input" class="form-select" placeholder="e.g., 3056, G3056, or 'word' / 'perfect'">
-                    <button id="search-btn" class="btn btn-primary" type="button">Search Concordance</button>
-                </div>
-            </div>
+        <!-- Refresh Interactive Left-Aligned Buttons Panel Area -->
+        <div class="d-flex flex-wrap gap-2 mb-4" style="max-width: 600px;">
+            <button id="random-hebrew-btn" class="btn btn-outline-warning btn-lg text-start flex-grow-1 py-3 px-4 shadow-sm fw-bold">
+                Draw New Hebrew Word (O.T.)
+            </button>
+            <button id="random-greek-btn" class="btn btn-outline-primary btn-lg text-start flex-grow-1 py-3 px-4 shadow-sm fw-bold">
+                Draw New Greek Word (N.T.)
+            </button>
         </div>
 
-        <div id="word-section" class="greek-section">
-            <h2 class="greek-title mb-3" id="section-title">Word Study</h2>
+        <!-- The Unified Display Output Visual Component Card Card -->
+        <div id="word-section" class="greek-section" style="max-width: 650px;">
+            <h2 class="greek-title mb-3" id="section-title">Word Details</h2>
             <div class="card p-4 shadow-sm text-start">
                 <div class="d-flex justify-content-between align-items-start flex-wrap">
                     <div class="text-start">
@@ -61,7 +56,6 @@
                 </div>
                 <hr>
                 
-                <!-- KJV Usage Track Definition Section -->
                 <p class="greek-text text-start"><strong>KJV Translation Usage:</strong></p>
                 <p id="study-kjv" class="lh-base fs-5 ps-3 border-start border-3 border-warning bg-white p-3 rounded mb-3 text-start fw-semibold text-secondary">
                     ---
@@ -69,17 +63,12 @@
 
                 <p class="greek-text text-start"><strong>Lexicon Definition:</strong></p>
                 <p id="study-meaning" class="lh-base fs-5 ps-3 border-start border-3 border-primary bg-white p-3 rounded text-start">
-                    Enter a Strong's reference code or type a common KJV English word above to scan the lexicon data.
+                    Loading daily lexicon data entry...
                 </p>
                 
                 <p class="greek-text mt-3 text-start"><strong>Derivation / Origin Etymology:</strong></p>
                 <p id="study-notes" class="text-muted italic ps-3 bg-white p-2 rounded text-start">---</p>
             </div>
-        </div>
-
-        <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
-            <label class="form-label fw-bold text-dark"><span class="badge bg-warning text-dark me-2" id="match-count">0</span> Multiple Dictionary Matches Found. Select Entry:</label>
-            <select id="results-selector" class="form-select border-warning text-start"></select>
         </div>
     </div>
     
@@ -99,182 +88,84 @@
     <script>
         window.strongsGreekDictionary = window.module.exports;
     </script>
-    
-       <script>
-        // Wrap everything inside an event listener to ensure the HTML elements are fully loaded first!
+
+    <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const selector = document.getElementById("language-selector");
-            const strongsInput = document.getElementById("strongs-input");
-            const searchBtn = document.getElementById("search-btn");
-            const resultsContainer = document.getElementById("results-selector-container");
-            const resultsSelector = document.getElementById("results-selector");
+            const sectionTitle = document.getElementById("section-title");
+            const studyStrongs = document.getElementById("study-strongs");
+            const studyWord = document.getElementById("study-word");
+            const studyTranslit = document.getElementById("study-translit");
+            const studyKjv = document.getElementById("study-kjv");
+            const studyMeaning = document.getElementById("study-meaning");
+            const studyNotes = document.getElementById("study-notes");
 
-            const savedLanguage = localStorage.getItem("studyLanguage") || "greek";
-            if (selector) selector.value = savedLanguage;
+            const hebrewBtn = document.getElementById("random-hebrew-btn");
+            const greekBtn = document.getElementById("random-greek-btn");
 
-            function getActiveDictionary(lang) {
-                if (lang === "greek") {
-                    return window.strongsGreekDictionary || window.greekDictionary || null;
-                } else {
-                    return window.strongsHebrewDictionary || window.hebrewDictionary || null;
-                }
-            }
+            // -------------------------------------------------------------
+            // DYNAMIC RANDOM ELEMENT LOGIC
+            // -------------------------------------------------------------
+            function getRandomWord(lang) {
+                const dict = lang === "greek" 
+                    ? window.strongsGreekDictionary 
+                    : window.strongsHebrewDictionary;
 
-            function performSearch() {
-                const query = strongsInput.value.trim();
-                if (!query) return;
-
-                const lang = selector.value;
-                localStorage.setItem("studyLanguage", lang);
-                
-                const dict = getActiveDictionary(lang);
-                if (!dict) {
-                    alert(`Error: Dictionary data object for ${lang} is missing or not declared inside its source script.`);
+                if (!dict || Object.keys(dict).length === 0) {
+                    alert(`Error: ${lang} dictionary data is empty or missing from memory variables.`);
                     return;
                 }
 
-                resultsContainer.style.display = "none";
-                resultsSelector.innerHTML = "";
+                // Isolate all property keys into a clean index array list
+                const keys = Object.keys(dict);
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                const entry = dict[randomKey];
 
-                const containsDigits = /\d+/.test(query);
-
-                if (containsDigits) {
-                    const digits = query.replace(/\D/g, "");
-                    const lookupKey = lang === "greek" ? `G${digits}` : `H${digits}`;
-                    
-                    const entry = dict[lookupKey] || dict[digits] || dict[parseInt(digits, 10)];
-                    
-                    if (entry) {
-                        // Pass the raw digits cleanly to avoid double prefix padding
-                        renderWordEntry(lang, digits, entry);
-                    } else {
-                        alert(`Strong's number [${lookupKey}] was not found in the database.`);
-                    }
-                } else {
-                    searchByEnglishWord(lang, query, dict);
+                if (entry) {
+                    renderWordEntry(lang, randomKey, entry);
                 }
             }
 
-            function searchByEnglishWord(lang, englishWord, dict) {
-                const lowerWord = englishWord.toLowerCase();
-                const matches = [];
-
-                for (const key in dict) {
-                    if (!dict.hasOwnProperty(key)) continue;
-                    const entry = dict[key];
-                    if (!entry) continue;
-
-                    const strongsDef = (entry.strongs_def || "").toLowerCase();
-                    const kjvDef = (entry.kjv_def || entry.kjv_usage || "").toLowerCase();
-                    const definition = (entry.definition || entry.meaning || "").toLowerCase();
-                    const lemma = (entry.lemma || entry.word || "").toLowerCase();
-
-                    if (strongsDef.includes(lowerWord) || 
-                        kjvDef.includes(lowerWord) || 
-                        definition.includes(lowerWord) || 
-                        lemma.includes(lowerWord)) {
-                        
-                        const cleanId = key.replace(/\D/g, "");
-                        matches.push({ id: cleanId, key: key, data: entry });
-                    }
-                }
-
-                if (matches.length === 0) {
-                    alert(`No entries matching the word "${englishWord}" were found.`);
-                    return;
-                }
-
-                if (matches.length === 1) {
-                    // FIXED PASSING KEY: Passes matches[0].id (just the digits) to perfectly align with renderWordEntry requirements
-                    renderWordEntry(lang, matches[0].id, matches[0].data);
-                } else {
-                    document.getElementById("match-count").textContent = matches.length;
-                    resultsContainer.style.display = "block";
-                    
-                    resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
-                    
-                    matches.forEach(match => {
-                        const wordLabel = match.data.lemma || match.data.word || "Word";
-                        const shortMeaning = match.data.strongs_def || match.data.definition || match.data.meaning || "";
-                        const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
-                        
-                        const option = document.createElement("option");
-                        option.value = match.key;
-                        option.textContent = `[${match.key}] ${wordLabel} - ${trimMeaning}`;
-                        resultsSelector.appendChild(option);
-                    });
-
-                    clearDisplayFields();
-                }
-            }
-
-            function renderWordEntry(lang, idStr, entry) {
+            function renderWordEntry(lang, fullKey, entry) {
+                // Clear out letter prefixes for display card layout badge formatting requirements
+                const numericId = fullKey.replace(/\D/g, "");
                 const prefix = lang === "greek" ? "G" : "H";
-                document.getElementById("study-strongs").textContent = `${prefix}${idStr}`;
-                document.getElementById("study-word").textContent = entry.lemma || entry.word || "---";
+
+                if (studyStrongs) studyStrongs.textContent = `${prefix}${numericId}`;
+                if (sectionTitle) sectionTitle.textContent = lang === "greek" ? "Greek Daily Word Study" : "Hebrew Daily Word Study";
+                
+                if (studyWord) studyWord.textContent = entry.lemma || entry.word || "---";
                 
                 const translitData = entry.xlit || entry.transliteration || entry.translit || "";
                 const pronData = entry.pron || entry.pronunciation || "";
-                document.getElementById("study-translit").textContent = 
-                    (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
+                if (studyTranslit) {
+                    studyTranslit.textContent = (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
+                }
                 
                 let kjvString = entry.kjv_def || entry.kjv_usage || "";
                 if (kjvString.startsWith(":--")) {
                     kjvString = kjvString.replace(/^:--/, "").trim();
                 }
-                document.getElementById("study-kjv").textContent = kjvString || "No specific isolated KJV translations cataloged.";
+                if (studyKjv) studyKjv.textContent = kjvString || "No specific isolated KJV translations cataloged.";
 
-                document.getElementById("study-meaning").textContent = 
-                    entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
+                if (studyMeaning) {
+                    studyMeaning.textContent = entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
+                }
                 
-                document.getElementById("study-notes").textContent = 
-                    entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
-                
-                document.getElementById("section-title").textContent = lang === "greek" ? "Greek Word Study" : "Hebrew Word Study";
-            }
-
-            function clearDisplayFields() {
-                document.getElementById("study-strongs").textContent = "---";
-                document.getElementById("study-word").textContent = "---";
-                document.getElementById("study-translit").textContent = "";
-                document.getElementById("study-kjv").textContent = "---";
-                document.getElementById("study-meaning").textContent = "Select an entry from the dropdown above to display details.";
-                document.getElementById("study-notes").textContent = "---";
+                if (studyNotes) {
+                    studyNotes.textContent = entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
+                }
             }
 
             // -----------------------------
-            // Event Listeners
+            // Live Operational Event Listeners
             // -----------------------------
-            if (searchBtn) searchBtn.addEventListener("click", performSearch);
-            
-            if (strongsInput) {
-                strongsInput.addEventListener("keypress", (e) => {
-                    if (e.key === "Enter") performSearch();
-                });
-            }
+            if (hebrewBtn) hebrewBtn.addEventListener("click", () => getRandomWord("hebrew"));
+            if (greekBtn) greekBtn.addEventListener("click", () => getRandomWord("greek"));
 
-            if (selector) {
-                selector.addEventListener("change", (e) => {
-                    localStorage.setItem("studyLanguage", e.target.value);
-                    resultsContainer.style.display = "none";
-                    clearDisplayFields();
-                });
-            }
-
-            if (resultsSelector) {
-                resultsSelector.addEventListener("change", (e) => {
-                    const key = e.target.value;
-                    if (!key) return;
-
-                    const lang = selector.value;
-                    const dict = getActiveDictionary(lang);
-                    if (dict && dict[key]) {
-                        const cleanId = key.replace(/\D/g, "");
-                        // Drops the alphabetical letter before passing it down so the visual badge builds properly
-                        renderWordEntry(lang, cleanId, dict[key]);
-                    }
-                });
-            }
+            // AUTOMATIC INITIALIZATION: Automatically rolls a random Greek word as default view when page launches
+            setTimeout(() => {
+                getRandomWord("greek");
+            }, 300);
         });
     </script>
 </body>
