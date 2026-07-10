@@ -73,24 +73,23 @@
         </div>
     </div>
     
-          <!-- Browser Node-Bridge Patch (Fixes module errors and stabilizes data routing) -->
+         <!-- Browser Node-Bridge Patch (Fixed Data Routing Paths) -->
     <script>
         window.module = {
             _exports: {},
             set exports(data) {
                 this._exports = data;
                 if (data && typeof data === 'object') {
-                    // Extract the first key name as a safe string
-                    const keys = Object.keys(data);
-                    const firstKey = keys.length > 0 ? String(keys[0]) : "";
+                    // Grab the very first object key string cleanly to isolate the file language profile
+                    const firstKey = Object.keys(data)[0] || "";
                     
-                    // Intelligent alphanumeric routing validation chain
-                    if (firstKey.toUpperCase().includes('G') || data["G1"] || data["G3056"]) {
+                    // Look directly for letter prefixes inside the actual dictionary entry codes
+                    if (firstKey.startsWith('G') || data["G1"] || data["G3056"]) {
                         window.strongsGreekDictionary = data;
-                    } else if (firstKey.toUpperCase().includes('H') || data["H1"] || data["H3056"]) {
+                    } else if (firstKey.startsWith('H') || data["H1"] || data["H2"]) {
                         window.strongsHebrewDictionary = data;
                     } else {
-                        // Numeric fallback assignment mapping
+                        // Numeric key index fallback logic assignment block
                         if (!window.strongsHebrewDictionary) {
                             window.strongsHebrewDictionary = data;
                         } else {
@@ -131,7 +130,7 @@
                     ? window.strongsGreekDictionary 
                     : window.strongsHebrewDictionary;
 
-                // Secondary layout target validation scan
+                // Secondary template layout backup capture verification track
                 if (!dict || Object.keys(dict).length === 0) {
                     dict = window.module._exports;
                 }
@@ -157,25 +156,52 @@
                 if (studyStrongs) studyStrongs.textContent = `${prefix}${numericId}`;
                 if (sectionTitle) sectionTitle.textContent = lang === "greek" ? "Greek Daily Word Study" : "Hebrew Daily Word Study";
                 
-                // Fallback loops to match variations between your file data schemas
-                if (studyWord) studyWord.textContent = entry.lemma || entry.word || "---";
+                // 1. Isolate the original lexical script word code
+                const rootWord = entry.lemma || entry.word || "---";
                 
+                // ---------------------------------------------------------
+                // NEW: PARSE ENGLISH TRANSLATION KEYWORD FROM THE GLOSS DATA
+                // ---------------------------------------------------------
+                // Open Scriptures schemas hold isolated English words inside .trans, .english, or .meaning properties
+                let englishTranslation = entry.trans || entry.english || entry.meaning || "";
+                
+                // Fallback: If no single word translation field exists, extract it directly from the primary meaning summary
+                if (!englishTranslation) {
+                    const fullDef = entry.strongs_def || entry.definition || "";
+                    // Grabs the first prominent words before common punctuation dividers to find the raw root meaning
+                    const cleanWords = fullDef.split(/[;.,]/)[0] || "";
+                    englishTranslation = cleanWords.replace(/[^a-zA-Z\s]/g, "").trim();
+                }
+
+                // Append the discovered English keyword directly alongside the original word format layout
+                if (studyWord) {
+                    if (englishTranslation) {
+                        studyWord.innerHTML = `${rootWord} <span class="fs-2 text-muted fw-normal ms-2">(${englishTranslation.toLowerCase()})</span>`;
+                    } else {
+                        studyWord.textContent = rootWord;
+                    }
+                }
+                
+                // 2. Map Transliteration metrics
                 const translitData = entry.xlit || entry.transliteration || entry.translit || "";
                 const pronData = entry.pron || entry.pronunciation || "";
                 if (studyTranslit) {
                     studyTranslit.textContent = (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
                 }
                 
+                // 3. Map KJV Translation Usage Space (Cleans out formatting character markers)
                 let kjvString = entry.kjv_def || entry.kjv_usage || entry.kjv || "";
                 if (kjvString.startsWith(":--")) {
                     kjvString = kjvString.replace(/^:--/, "").trim();
                 }
                 if (studyKjv) studyKjv.textContent = kjvString || "No specific isolated KJV translations cataloged.";
 
+                // 4. Map Lexicon Definition & Usage (CRITICAL MAPPING FIX: Checks for 'strongs_def' first [1])
                 if (studyMeaning) {
                     studyMeaning.textContent = entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
                 }
                 
+                // 5. Map Derivation / Origin Footnotes (CRITICAL MAPPING FIX: Checks for 'derivation' first [1])
                 if (studyNotes) {
                     studyNotes.textContent = entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
                 }
@@ -187,7 +213,7 @@
             if (hebrewBtn) hebrewBtn.addEventListener("click", () => getRandomWord("hebrew"));
             if (greekBtn) greekBtn.addEventListener("click", () => getRandomWord("greek"));
 
-            // AUTOMATIC INITIALIZATION: Delayed execution allows storage array mappings to lock down
+            // AUTOMATIC INITIALIZATION: Delayed launch allows dictionary processing streams to completely stabilize
             setTimeout(() => {
                 getRandomWord("greek");
             }, 600);
