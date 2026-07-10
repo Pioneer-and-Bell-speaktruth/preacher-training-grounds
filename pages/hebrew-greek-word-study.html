@@ -1,88 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hebrew & Greek Word Study</title>
-    
-    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
-    <script>
-    fetch('../assets/global.html')
-        .then(r => {
-            if(!r.ok) throw new Error("Global layout asset not found");
-            return r.text();
-        })
-        .then(html => {
-            const template = document.createElement("div");
-            template.innerHTML = html;
-            
-            template.querySelectorAll("link, script").forEach(node => {
-                const clone = node.cloneNode(true);
-                if (clone.tagName === 'SCRIPT' && clone.src.includes('.css')) return;
-                document.head.appendChild(clone);
-            });
-
-            const nav = template.querySelector("nav");
-            if (nav) document.body.prepend(nav);
-        })
-        .catch(err => console.warn("Navbar loading bypassed:", err));
-    </script>
-</head>
-<body class="bg-light">
-    <div class="container py-4 greek-container">
-        <h1 class="greek-header mb-4">Hebrew & Greek Concordance Study</h1>
-        
-        <div class="row g-3 mb-4">
-            <div class="col-md-4">
-                <label class="form-label fw-bold">Testament / Language:</label>
-                <select id="language-selector" class="form-select">
-                    <option value="hebrew">Hebrew (Old Testament)</option>
-                    <option value="greek" selected>Greek (New Testament)</option>
-                </select>
-            </div>
-            <div class="col-md-8">
-                <label class="form-label fw-bold">Search Strong's Number or KJV Translation Word:</label>
-                <div class="input-group">
-                    <input type="text" id="strongs-input" class="form-select" placeholder="e.g., 3056, G3056, or 'word' / 'perfect'">
-                    <button id="search-btn" class="btn btn-primary" type="button">Search Concordance</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="word-section" class="greek-section">
-            <h2 class="greek-title mb-3" id="section-title">Word Study</h2>
-            <div class="card p-4 shadow-sm text-start">
-                <div class="d-flex justify-content-between align-items-start flex-wrap">
-                    <div class="text-start">
-                        <p class="display-4 fw-bold text-primary mb-1" id="study-word">---</p>
-                        <p class="text-muted fs-5 mb-3" id="study-translit"></p>
-                    </div>
-                    <span id="study-strongs" class="badge bg-secondary fs-4 py-2 px-3">---</span>
-                </div>
-                <hr>
-                
-                <!-- KJV Usage Track Definition Section -->
-                <p class="greek-text text-start"><strong>KJV Translation Usage:</strong></p>
-                <p id="study-kjv" class="lh-base fs-5 ps-3 border-start border-3 border-warning bg-white p-3 rounded mb-3 text-start fw-semibold text-secondary">
-                    ---
-                </p>
-
-                <p class="greek-text text-start"><strong>Lexicon Definition:</strong></p>
-                <p id="study-meaning" class="lh-base fs-5 ps-3 border-start border-3 border-primary bg-white p-3 rounded text-start">
-                    Enter a Strong's reference code or type a common KJV English word above to scan the lexicon data.
-                </p>
-                
-                <p class="greek-text mt-3 text-start"><strong>Derivation / Origin Etymology:</strong></p>
-                <p id="study-notes" class="text-muted italic ps-3 bg-white p-2 rounded text-start">---</p>
-            </div>
-        </div>
-
-        <div id="results-selector-container" class="mb-4 card p-3 bg-light border-warning shadow-sm" style="display: none;">
-            <label class="form-label fw-bold text-dark"><span class="badge bg-warning text-dark me-2" id="match-count">0</span> Multiple Dictionary Matches Found. Select Entry:</label>
-            <select id="results-selector" class="form-select border-warning text-start"></select>
-        </div>
-    </div>
-    
     <!-- Browser Node-Bridge Patch (Fixes the module is not defined error) -->
     <script>
         window.module = { exports: {} };
@@ -266,7 +181,8 @@
             const dict = getActiveDictionary(lang);
             if (dict && dict[key]) {
                 // FIXED KEY SELECTION: Retains the explicit key matching rules ("G5046") instead of breaking alpha mappings
-                renderWordEntry(lang, key, dict[key]);
+                const cleanId = key.replace(/\D/g, "");
+                renderWordEntry(lang, cleanId, dict[key]);
             }
         });
     </script>
