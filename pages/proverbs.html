@@ -29,32 +29,71 @@
 
         <h1 class="prov-header mb-4">Proverbs for the Preacher</h1>
 
-        <div id="proverbs-list"></div>
+        <!-- Single, clean vertical grid layout wrapper for left-aligned buttons -->
+        <div id="proverbs-list" class="d-grid gap-3" style="max-width: 650px;"></div>
 
     </div>
 
-   <div class="container py-4">
-    <h1 class="mb-4">Proverbs for the Preacher</h1>
-    <div id="proverbs-list" class="d-grid gap-3" style="max-width: 500px;"></div>
-</div>
+    <script>
+        const list = document.getElementById("proverbs-list");
 
-<script>
-    const list = document.getElementById("proverbs-list");
-    
-    proverbsArray.forEach(proverb => {
-        const button = document.createElement("button");
-        button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
-        
-        button.innerHTML = `
-            <span class="fw-bold">${proverb.title || proverb}</span>
-        `;
-        
-        button.addEventListener("click", () => {
-            // Keep your exact existing navigation/modal logic here
-        });
-        
-        list.appendChild(button);
-    });
-</script>
+        // Dynamically loads the corresponding data array from your server data folder
+        async function loadProverbs() {
+            try {
+                // Fetches the data structure registry file
+                const response = await fetch('../data/proverbs.json');
+                if (!response.ok) throw new Error("Proverbs data file not found");
+                
+                const proverbsArray = await response.json();
+
+                proverbsArray.forEach(proverb => {
+                    const button = document.createElement("button");
+                    button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+                    
+                    // Support both object strings (proverb.ref) or flat string listings (proverb)
+                    const displayLabel = proverb.ref || proverb.title || proverb;
+                    const displaySubtitle = proverb.theme || "";
+
+                    button.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center w-100 flex-wrap gap-2">
+                            <span class="fw-bold text-primary">${displayLabel}</span>
+                            ${displaySubtitle ? `<span class="text-muted small fs-6">${displaySubtitle}</span>` : ''}
+                        </div>
+                    `;
+                    
+                    button.addEventListener("click", () => {
+                        // Store selection securely before forwarding to your detail viewing card
+                        sessionStorage.setItem("currentVerse", JSON.stringify(proverb));
+                        sessionStorage.removeItem("randomVerse");
+                        window.location.href = "verse-detail.html";
+                    });
+                    
+                    list.appendChild(button);
+                });
+            } catch (err) {
+                console.warn("Falling back to local array loading state:", err);
+                // Fail-safe: if you hardcoded data variables inside your script previously, run that map here instead
+                if (typeof proverbsArray !== 'undefined') {
+                    renderLocalArray(proverbsArray);
+                }
+            }
+        }
+
+        function renderLocalArray(arr) {
+            list.innerHTML = "";
+            arr.forEach(proverb => {
+                const button = document.createElement("button");
+                button.className = "btn btn-outline-primary btn-lg w-100 text-start py-3 px-4 shadow-sm";
+                button.innerHTML = `<span class="fw-bold">${proverb.title || proverb}</span>`;
+                button.addEventListener("click", () => {
+                    window.location.href = "verse-detail.html";
+                });
+                list.appendChild(button);
+            });
+        }
+
+        // Initialize loading procedure
+        loadProverbs();
+    </script>
 </body>
 </html>
