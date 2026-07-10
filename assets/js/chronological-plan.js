@@ -1,219 +1,172 @@
-// chronological-plan.js
-// Full-Year Chronological Bible Reading Plan (364 days)
+// Chronological Bible Study Plan HTML Export
+const chronologicalPlanHTML = `
+<!-- Weeks 1–3 — Creation to Patriarchs -->
+<h4>Weeks 1–3 — Creation to Patriarchs</h4>
+<p>- Week 1: Genesis 1–11</p>
+<p>- Week 2: Job</p>
+<p>- Week 3: Genesis 12–50</p>
 
-const chronologicalPlan = [
-    // Week 1 — Genesis 1–11
-    { ot: ["Genesis 1"], nt: ["Matthew 1"] },
-    { ot: ["Genesis 2"], nt: ["Matthew 2"] },
-    { ot: ["Genesis 3"], nt: ["Matthew 3"] },
-    { ot: ["Genesis 4"], nt: ["Matthew 4"] },
-    { ot: ["Genesis 5"], nt: ["Matthew 5"] },
-    { ot: ["Genesis 6"], nt: ["Matthew 6"] },
-    { ot: ["Genesis 7"], nt: ["Matthew 7"] },
+<!-- Weeks 4–8 — Exodus to Promised Land -->
+<h4>Weeks 4–8 — Exodus to Promised Land</h4>
+<p>- Week 4: Exodus 1–18</p>
+<p>- Week 5: Exodus 19–40</p>
+<p>- Week 6: Leviticus</p>
+<p>- Week 7: Numbers</p>
+<p>- Week 8: Deuteronomy</p>
 
-    // Week 2 — Job
-    { ot: ["Job 1"], nt: ["Matthew 8"] },
-    { ot: ["Job 2"], nt: ["Matthew 9"] },
-    { ot: ["Job 3"], nt: ["Matthew 10"] },
-    { ot: ["Job 4"], nt: ["Matthew 11"] },
-    { ot: ["Job 5"], nt: ["Matthew 12"] },
-    { ot: ["Job 6"], nt: ["Matthew 13"] },
-    { ot: ["Job 7"], nt: ["Matthew 14"] },
+<!-- Weeks 9–11 — Conquest & Judges -->
+<h4>Weeks 9–11 — Conquest & Judges</h4>
+<p>- Week 9: Joshua</p>
+<p>- Week 10: Judges</p>
+<p>- Week 11: Ruth</p>
 
-    // Week 3 — Genesis 12–50
-    { ot: ["Genesis 12–15"], nt: ["Matthew 15"] },
-    { ot: ["Genesis 16–19"], nt: ["Matthew 16"] },
-    { ot: ["Genesis 20–23"], nt: ["Matthew 17"] },
-    { ot: ["Genesis 24–27"], nt: ["Matthew 18"] },
-    { ot: ["Genesis 28–31"], nt: ["Matthew 19"] },
-    { ot: ["Genesis 32–36"], nt: ["Matthew 20"] },
-    { ot: ["Genesis 37–50"], nt: ["Matthew 21"] },
+<!-- Weeks 12–17 — United Kingdom -->
+<h4>Weeks 12–17 — United Kingdom (Saul, David, Solomon)</h4>
+<h4>Week 12 — 1 Samuel</h4>
+<p>Add early David psalms:</p>
+<p>- Psalms 3–7, 11, 13, 22, 23, 34, 52–54, 56–57, 59, 63</p>
+<h4>Week 13 — 2 Samuel</h4>
+<p>Add middle David psalms:</p>
+<p>- Psalms 8–10, 14–21, 24–31, 35–41, 51, 60, 65, 69–71</p>
+<h4>Week 14 — 1 Chronicles 1–20</h4>
+<p>Add late David psalms:</p>
+<p>- Psalms 86, 101, 103, 108–110, 138–145</p>
+<h4>Week 15 — 1 Chronicles 21–29</h4>
+<p>Add coronation/temple psalms:</p>
+<p>- Psalm 2, Psalm 72, Psalm 127</p>
+<h4>Week 16 — 1 Kings 1–11</h4>
+<p>Solomon era — no new Psalms beyond 72 & 127.</p>
+<h4>Week 17 — 2 Chronicles 1–9</h4>
+<p>Temple dedication — add:</p>
+<p>- Psalms 93–100 (YHWH reigns psalms)</p>
 
-    // Week 4 — Exodus 1–18
-    { ot: ["Exodus 1–3"], nt: ["Matthew 22"] },
-    { ot: ["Exodus 4–6"], nt: ["Matthew 23"] },
-    { ot: ["Exodus 7–9"], nt: ["Matthew 24"] },
-    { ot: ["Exodus 10–12"], nt: ["Matthew 25"] },
-    { ot: ["Exodus 13–15"], nt: ["Matthew 26"] },
-    { ot: ["Exodus 16–18"], nt: ["Matthew 27"] },
-    { ot: ["Psalm 105"], nt: ["Matthew 28"] },
+<!-- Weeks 18–35 — Divided Kingdom -->
+<h4>Weeks 18–35 — Divided Kingdom with Prophets Inserted</h4>
+<h4>Weeks 18–20 — Early Divided Kingdom</h4>
+<p>- Week 18:</p>
+<p>  - 1 Kings 12–16</p>
+<p>  - Prophet: Obadiah (early Edom judgment)</p>
+<p>  - Psalms 42–49 (Korah)</p>
+<p>- Week 19:</p>
+<p>  - 1 Kings 17–22</p>
+<p>  - Prophet: Elijah (within Kings narrative)</p>
+<p>  - Psalms 50, 73–83 (Asaph)</p>
+<p>- Week 20:</p>
+<p>  - 2 Kings 1–10</p>
+<p>  - Prophet: Elisha</p>
 
-    // Week 5 — Exodus 19–40
-    { ot: ["Exodus 19–21"], nt: ["Mark 1"] },
-    { ot: ["Exodus 22–24"], nt: ["Mark 2"] },
-    { ot: ["Exodus 25–27"], nt: ["Mark 3"] },
-    { ot: ["Exodus 28–30"], nt: ["Mark 4"] },
-    { ot: ["Exodus 31–33"], nt: ["Mark 5"] },
-    { ot: ["Exodus 34–36"], nt: ["Mark 6"] },
-    { ot: ["Exodus 37–40"], nt: ["Mark 7"] },
+<!-- Weeks 21–23 — Assyrian Threat Rises -->
+<h4>Weeks 21–23 — Assyrian Threat Rises</h4>
+<p>- Week 21:</p>
+<p>  - 2 Kings 11–14</p>
+<p>  - Prophets:</p>
+<p>    - Joel</p>
+<p>    - Jonah</p>
+<p>  - Psalm 115–118 (temple worship psalms)</p>
+<p>- Week 22:</p>
+<p>  - 2 Kings 15</p>
+<p>  - Prophets:</p>
+<p>    - Amos</p>
+<p>    - Hosea</p>
+<p>  - Psalm 90 (Moses; fits during reflection on national decline)</p>
+<p>- Week 23:</p>
+<p>  - 2 Chronicles 10–28</p>
+<p>  - Prophet: Micah</p>
+<p>  - Psalm 91 (trust psalm during Assyrian threat)</p>
 
-    // Week 6 — Leviticus
-    { ot: ["Leviticus 1–3"], nt: ["Mark 8"] },
-    { ot: ["Leviticus 4–6"], nt: ["Mark 9"] },
-    { ot: ["Leviticus 7–9"], nt: ["Mark 10"] },
-    { ot: ["Leviticus 10–12"], nt: ["Mark 11"] },
-    { ot: ["Leviticus 13–15"], nt: ["Mark 12"] },
-    { ot: ["Leviticus 16–18"], nt: ["Mark 13"] },
-    { ot: ["Leviticus 19–22"], nt: ["Mark 14"] },
+<!-- Weeks 24–27 — Isaiah's Era -->
+<h4>Weeks 24–27 — Isaiah’s Era</h4>
+<p>- Week 24:</p>
+<p>  - 2 Kings 16–20</p>
+<p>  - Prophet: Isaiah 1–39</p>
+<p>  - Psalms 46–48 (deliverance psalms)</p>
+<p>- Week 25:</p>
+<p>  - Prophet: Isaiah 40–66</p>
+<p>  - Psalm 76 (Assyrian defeat theme)</p>
+<p>- Week 26:</p>
+<p>  - Prophet: Nahum</p>
+<p>- Week 27:</p>
+<p>  - Prophets:</p>
+<p>    - Habakkuk</p>
+<p>    - Zephaniah</p>
 
-    // Week 7 — Numbers
-    { ot: ["Numbers 1–3"], nt: ["Mark 15"] },
-    { ot: ["Numbers 4–6"], nt: ["Mark 16"] },
-    { ot: ["Numbers 7–9"], nt: ["Luke 1"] },
-    { ot: ["Numbers 10–12"], nt: ["Luke 2"] },
-    { ot: ["Numbers 13–15"], nt: ["Luke 3"] },
-    { ot: ["Numbers 16–18"], nt: ["Luke 4"] },
-    { ot: ["Numbers 19–21"], nt: ["Luke 5"] },
+<!-- Weeks 28–30 — Fall of Judah Approaches -->
+<h4>Weeks 28–30 — Fall of Judah Approaches</h4>
+<p>- Week 28:</p>
+<p>  - 2 Kings 21–23</p>
+<p>  - 2 Chronicles 29–35</p>
+<p>- Week 29:</p>
+<p>  - Prophet: Jeremiah 1–29</p>
+<p>  - Psalm 74, 79, 137</p>
+<p>- Week 30:</p>
+<p>  - Prophet: Jeremiah 30–52</p>
+<p>  - Lamentations</p>
 
-    // Week 8 — Deuteronomy
-    { ot: ["Deuteronomy 1–3"], nt: ["Luke 6"] },
-    { ot: ["Deuteronomy 4–6"], nt: ["Luke 7"] },
-    { ot: ["Deuteronomy 7–9"], nt: ["Luke 8"] },
-    { ot: ["Deuteronomy 10–12"], nt: ["Luke 9"] },
-    { ot: ["Deuteronomy 13–16"], nt: ["Luke 10"] },
-    { ot: ["Deuteronomy 17–20"], nt: ["Luke 11"] },
-    { ot: ["Deuteronomy 21–25"], nt: ["Luke 12"] },
+<!-- Weeks 31–34 — Exile -->
+<h4>Weeks 31–34 — Exile</h4>
+<p>- Week 31:</p>
+<p>  - 2 Kings 24–25</p>
+<p>  - Prophet: Ezekiel 1–24</p>
+<p>- Week 32:</p>
+<p>  - Prophet: Ezekiel 25–48</p>
+<p>  - Psalm 102 (affliction in exile)</p>
+<p>- Week 33:</p>
+<p>  - Prophet: Daniel 1–6</p>
+<p>  - Psalm 130 (penitential psalm)</p>
+<p>- Week 34:</p>
+<p>  - Prophet: Daniel 7–12</p>
 
-    // Week 9 — Joshua
-    { ot: ["Joshua 1–3"], nt: ["Luke 13"] },
-    { ot: ["Joshua 4–6"], nt: ["Luke 14"] },
-    { ot: ["Joshua 7–9"], nt: ["Luke 15"] },
-    { ot: ["Joshua 10–12"], nt: ["Luke 16"] },
-    { ot: ["Joshua 13–15"], nt: ["Luke 17"] },
-    { ot: ["Joshua 16–18"], nt: ["Luke 18"] },
-    { ot: ["Joshua 19–24"], nt: ["Luke 19"] },
+<!-- Weeks 35–38 — Return & Restoration -->
+<h4>Weeks 35–38 — Return & Restoration</h4>
+<p>- Week 35:</p>
+<p>  - Ezra 1–6</p>
+<p>  - Prophet: Haggai</p>
+<p>- Week 36:</p>
+<p>  - Ezra 7–10</p>
+<p>  - Prophet: Zecharia</p>
+<p>- Week 37:</p>
+<p>  - Nehemiah</p>
+<p>  - Psalm 85, Psalm 126</p>
+<p>- Week 38:</p>
+<p>  - Esther</p>
+<p>  - Prophet: Malachi</p>
 
-    // Week 10 — Judges
-    { ot: ["Judges 1–3"], nt: ["Luke 20"] },
-    { ot: ["Judges 4–6"], nt: ["Luke 21"] },
-    { ot: ["Judges 7–9"], nt: ["Luke 22"] },
-    { ot: ["Judges 10–12"], nt: ["Luke 23"] },
-    { ot: ["Judges 13–15"], nt: ["Luke 24"] },
-    { ot: ["Judges 16–18"], nt: ["John 1"] },
-    { ot: ["Judges 19–21"], nt: ["John 2"] },
+<!-- Weeks 39–52 — New Testament Chronology -->
+<h4>Weeks 39–52 — New Testament Chronology</h4>
+<h4>Weeks 39–42 — Life of Christ</h4>
+<p>- Week 39: Matthew</p>
+<p>- Week 40: Mark</p>
+<p>- Week 41: Luke</p>
+<p>- Week 42: John</p>
 
-    // Week 11 — Ruth
-    { ot: ["Ruth 1"], nt: ["John 3"] },
-    { ot: ["Ruth 2"], nt: ["John 4"] },
-    { ot: ["Ruth 3"], nt: ["John 5"] },
-    { ot: ["Ruth 4"], nt: ["John 6"] },
-    { ot: ["Psalm 1"], nt: ["John 7"] },
-    { ot: ["Psalm 15"], nt: ["John 8"] },
-    { ot: ["Psalm 19"], nt: ["John 9"] },
+<!-- Weeks 43–52 — Early Church & Letters -->
+<h4>Weeks 43–52 — Early Church & Apostolic Letters</h4>
+<p>- Week 43: Acts 1–12</p>
+<p>- Week 44: Acts 13–28</p>
+<p>    - Psalms 1, 15, 19, 24, 33, 112–117, 119, 146–150</p>
+<h4>Paul’s Letters in Historical Order</h4>
+<p>- Week 45: Galatians</p>
+<p>- Week 46: 1–2 Thessalonians</p>
+<p>- Week 47: 1–2 Corinthians</p>
+<p>- Week 48: Romans</p>
+<p>- Week 49: Prison Epistles</p>
+<p>  - Ephesians</p>
+<p>  - Philippians</p>
+<p>  - Colossians</p>
+<p>  - Philemon</p>
+<h4>Week 50: Pastoral Epistles</h4>
+<p>  - 1 Timothy</p>
+<p>  - Titus</p>
+<p>  - 2 Timothy</p>
+<h4>Week 51: General Epistles</h4>
+<p>  - James</p>
+<p>  - 1–2 Peter</p>
+<p>  - Jude</p>
+<h4>Week 52:</h4>
+<p>  - Hebrews</p>
+<p>  - 1–3 John</p>
+<p>  - Revelation</p>
+`;
 
-    // Week 12 — 1 Samuel + Psalms
-    { ot: ["1 Samuel 1–3"], nt: ["John 10"] },
-    { ot: ["1 Samuel 4–7"], nt: ["John 11"] },
-    { ot: ["1 Samuel 8–10"], nt: ["John 12"] },
-    { ot: ["1 Samuel 11–13"], nt: ["John 13"] },
-    { ot: ["1 Samuel 14–16"], nt: ["John 14"] },
-    { ot: ["1 Samuel 17–19"], nt: ["John 15"] },
-    { ot: ["Psalms 3–7"], nt: ["John 16"] },
-
-    // Week 13 — 2 Samuel + Psalms
-    { ot: ["2 Samuel 1–3"], nt: ["John 17"] },
-    { ot: ["2 Samuel 4–7"], nt: ["John 18"] },
-    { ot: ["2 Samuel 8–10"], nt: ["John 19"] },
-    { ot: ["2 Samuel 11–13"], nt: ["John 20"] },
-    { ot: ["2 Samuel 14–16"], nt: ["John 21"] },
-    { ot: ["2 Samuel 17–19"], nt: ["Acts 1"] },
-    { ot: ["Psalms 8–10"], nt: ["Acts 2"] },
-
-    // Week 14 — 1 Chronicles 1–20 + Psalms
-    { ot: ["1 Chronicles 1–4"], nt: ["Acts 3"] },
-    { ot: ["1 Chronicles 5–7"], nt: ["Acts 4"] },
-    { ot: ["1 Chronicles 8–10"], nt: ["Acts 5"] },
-    { ot: ["1 Chronicles 11–13"], nt: ["Acts 6"] },
-    { ot: ["1 Chronicles 14–16"], nt: ["Acts 7"] },
-    { ot: ["1 Chronicles 17–20"], nt: ["Acts 8"] },
-    { ot: ["Psalms 86, 101"], nt: ["Acts 9"] },
-
-    // Week 15 — 1 Chronicles 21–29 + Psalms
-    { ot: ["1 Chronicles 21–23"], nt: ["Acts 10"] },
-    { ot: ["1 Chronicles 24–26"], nt: ["Acts 11"] },
-    { ot: ["1 Chronicles 27–29"], nt: ["Acts 12"] },
-    { ot: ["Psalm 2"], nt: ["Acts 13"] },
-    { ot: ["Psalm 72"], nt: ["Acts 14"] },
-    { ot: ["Psalm 127"], nt: ["Acts 15"] },
-    { ot: ["Psalm 93–94"], nt: ["Acts 16"] },
-
-    // Week 16 — 1 Kings 1–11
-    { ot: ["1 Kings 1–2"], nt: ["Acts 17"] },
-    { ot: ["1 Kings 3–4"], nt: ["Acts 18"] },
-    { ot: ["1 Kings 5–7"], nt: ["Acts 19"] },
-    { ot: ["1 Kings 8"], nt: ["Acts 20"] },
-    { ot: ["1 Kings 9–10"], nt: ["Acts 21"] },
-    { ot: ["1 Kings 11"], nt: ["Acts 22"] },
-    { ot: ["Psalm 95–96"], nt: ["Acts 23"] },
-
-    // Week 17 — 2 Chronicles 1–9 + Psalms
-    { ot: ["2 Chronicles 1–3"], nt: ["Acts 24"] },
-    { ot: ["2 Chronicles 4–6"], nt: ["Acts 25"] },
-    { ot: ["2 Chronicles 7–9"], nt: ["Acts 26"] },
-    { ot: ["Psalms 97–98"], nt: ["Acts 27"] },
-    { ot: ["Psalms 99–100"], nt: ["Acts 28"] },
-    { ot: ["Psalm 42"], nt: ["Romans 1"] },
-    { ot: ["Psalm 43"], nt: ["Romans 2"] },
-
-    // Week 18 — 1 Kings 12–16 + Obadiah + Psalms
-    { ot: ["1 Kings 12–13"], nt: ["Romans 3"] },
-    { ot: ["1 Kings 14–15"], nt: ["Romans 4"] },
-    { ot: ["1 Kings 16"], nt: ["Romans 5"] },
-    { ot: ["Obadiah"], nt: ["Romans 6"] },
-    { ot: ["Psalms 42–44"], nt: ["Romans 7"] },
-    { ot: ["Psalms 45–47"], nt: ["Romans 8"] },
-    { ot: ["Psalm 49"], nt: ["Romans 9"] },
-
-    // Week 19 — 1 Kings 17–22 + Elijah + Psalms
-    { ot: ["1 Kings 17–18"], nt: ["Romans 10"] },
-    { ot: ["1 Kings 19–20"], nt: ["Romans 11"] },
-    { ot: ["1 Kings 21–22"], nt: ["Romans 12"] },
-    { ot: ["Psalms 50"], nt: ["Romans 13"] },
-    { ot: ["Psalms 73–75"], nt: ["Romans 14"] },
-    { ot: ["Psalms 76–78"], nt: ["Romans 15"] },
-    { ot: ["Psalms 79–83"], nt: ["Romans 16"] },
-
-    // Week 20 — 2 Kings 1–10
-    { ot: ["2 Kings 1–3"], nt: ["1 Corinthians 1"] },
-    { ot: ["2 Kings 4–5"], nt: ["1 Corinthians 2"] },
-    { ot: ["2 Kings 6–7"], nt: ["1 Corinthians 3"] },
-    { ot: ["2 Kings 8"], nt: ["1 Corinthians 4"] },
-    { ot: ["2 Kings 9"], nt: ["1 Corinthians 5"] },
-    { ot: ["2 Kings 10"], nt: ["1 Corinthians 6"] },
-    { ot: ["Psalm 115"], nt: ["1 Corinthians 7"] },
-
-    // Week 21 — 2 Kings 11–14 + Joel + Jonah + Psalms
-    { ot: ["2 Kings 11–12"], nt: ["1 Corinthians 8"] },
-    { ot: ["2 Kings 13"], nt: ["1 Corinthians 9"] },
-    { ot: ["2 Kings 14"], nt: ["1 Corinthians 10"] },
-    { ot: ["Joel 1–3"], nt: ["1 Corinthians 11"] },
-    { ot: ["Jonah"], nt: ["1 Corinthians 12"] },
-    { ot: ["Psalms 115–116"], nt: ["1 Corinthians 13"] },
-    { ot: ["Psalms 117–118"], nt: ["1 Corinthians 14"] },
-
-    // Week 22 — 2 Kings 15 + Amos + Hosea + Psalm 90
-    { ot: ["2 Kings 15"], nt: ["1 Corinthians 15"] },
-    { ot: ["Amos 1–3"], nt: ["1 Corinthians 16"] },
-    { ot: ["Amos 4–6"], nt: ["2 Corinthians 1"] },
-    { ot: ["Amos 7–9"], nt: ["2 Corinthians 2"] },
-    { ot: ["Hosea 1–3"], nt: ["2 Corinthians 3"] },
-    { ot: ["Hosea 4–7"], nt: ["2 Corinthians 4"] },
-    { ot: ["Psalm 90"], nt: ["2 Corinthians 5"] },
-
-    // Week 23 — 2 Chronicles 10–28 + Micah + Psalm 91
-    { ot: ["2 Chronicles 10–12"], nt: ["2 Corinthians 6"] },
-    { ot: ["2 Chronicles 13–16"], nt: ["2 Corinthians 7"] },
-    { ot: ["2 Chronicles 17–20"], nt: ["2 Corinthians 8"] },
-    { ot: ["2 Chronicles 21–23"], nt: ["2 Corinthians 9"] },
-    { ot: ["2 Chronicles 24–26"], nt: ["2 Corinthians 10"] },
-    { ot: ["2 Chronicles 27–28"], nt: ["2 Corinthians 11"] },
-    { ot: ["Micah 1–7"], nt: ["2 Corinthians 12"] },
-
-    // Week 24 — Isaiah 1–39 + Psalms
-    { ot: ["Isaiah 1–4"], nt: ["2 Corinthians 13"] },
-    { ot: ["Isaiah 5–8"], nt: ["Galatians 1"] },
-    { ot: ["Isaiah 9–12"], nt: ["Galatians 2"] },
-    { ot: ["Isaiah 13–16"], nt: ["Galatians 3"] },
-    { ot: ["Isaiah 17–20"], nt: ["Galatians 4"] },
-    { ot: ["Isaiah 21–24"], nt: ["Galatians 5"] },
-    { ot: ["Psalms 46–
+// DOM Injection Logic Example (Uncomment to use)
+// document.getElementById('secret-text').innerHTML = chronologicalPlanHTML;
