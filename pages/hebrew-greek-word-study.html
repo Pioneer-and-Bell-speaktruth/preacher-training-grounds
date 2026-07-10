@@ -90,9 +90,9 @@
             const hebrewBtn = document.getElementById("random-hebrew-btn");
             const greekBtn = document.getElementById("random-greek-btn");
 
-            // -------------------------------------------------------------
+            // -----------------------------
             // DYNAMIC RANDOM ELEMENT LOGIC
-            // -------------------------------------------------------------
+            // -----------------------------
             function getRandomWord(lang) {
                 // Read directly from your file's native global variables
                 const dict = lang === "greek" 
@@ -129,7 +129,7 @@
                 if (entry.strongs_def) {
                     // Pull the very first words before the first comma/semicolon for a clean summary
                     const cleanWords = entry.strongs_def.split(/[;.,]/);
-                    // FIXED: Targets the first item [0] of the array list to prevent a crash
+                    // FIXED: Targets the string element explicitly to execute .replace() cleanly without crashing
                     if (cleanWords && cleanWords.length > 0) {
                         englishTranslation = cleanWords[0].replace(/[^a-zA-Z\s]/g, "").trim();
                     }
