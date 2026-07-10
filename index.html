@@ -13,12 +13,27 @@
           const template = document.createElement("div");
           template.innerHTML = html;
 
-          // Inject CSS + JS into <head>
-          document.head.append(...template.querySelectorAll("link, script"));
+          // 1. Inject CSS stylesheet links into <head> (Safe)
+          document.head.append(...template.querySelectorAll("link"));
 
-          // Inject navbar into <body>
+          // 2. Inject navbar directly into the top of <body>
           const nav = template.querySelector("nav");
           if (nav) document.body.prepend(nav);
+
+          // 3. FIXED: Extract scripts and re-create them properly so the browser executes them
+          template.querySelectorAll("script").forEach(oldScript => {
+              const newScript = document.createElement("script");
+              
+              // Copy all attributes (like src, integrity, crossorigin)
+              Array.from(oldScript.attributes).forEach(attr => {
+                  newScript.setAttribute(attr.name, attr.value);
+              });
+              
+              newScript.textContent = oldScript.textContent;
+              
+              // Appending to body guarantees it fires AFTER the navbar elements exist on screen
+              document.body.appendChild(newScript);
+          });
       });
     </script>
 </head>
@@ -42,7 +57,8 @@
         </div>
 
     </div>
-        <!-- Church Website Button -->
+    
+    <!-- Church Website Button -->
     <div class="container text-center mt-5 mb-4">
         <a href="https://pioneer-and-bell-speaktruth.github.io/" 
            class="btn btn-lg btn-secondary">
