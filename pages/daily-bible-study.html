@@ -25,45 +25,45 @@
 
 <body class="bg-light">
 
-    <div class="container py-4 daily-container">
-        <!-- Plan Selection -->
-        <div class="daily-section mb-4">
-            <h2 class="daily-title">Choose Your Reading Plan</h2>
-    
-            <select id="plan-selector" class="form-select py-3">
-               <option value="select" selected>Select a plan.</option>
-               <option value="sectional">Sectional Plan</option>
-               <option value="chronological">Chronological Plan</option>
-            </select>
-    
-            <p class="daily-text mt-2">
-                Your selection will automatically update today's reading.
-            </p>
-        </div>
-        
-        <!-- This single element will hold whichever layout is active -->
-        <div id="secret-text" hidden></div>
+<div class="container py-4 daily-container">
+    <!-- Plan Selection -->
+    <div class="daily-section mb-4">
+        <h2 class="daily-title">Choose Your Reading Plan</h2>
 
-        <!-- Today's Reading -->
-        <div class="daily-section mt-4">
-            <h2 class="daily-title">Today's Reading (Day <span id="today-number"></span>)</h2>
-            <p class="daily-text">Old Testament: <span id="ot-reading"></span></p>
-            <p class="daily-text">New Testament: <span id="nt-reading"></span></p>
-        </div>
+        <select id="plan-selector" class="form-select py-3">
+           <option value="select" selected>Select a plan.</option>
+           <option value="sectional">Sectional Plan</option>
+           <option value="chronological">Chronological Plan</option>
+        </select>
 
-        <!-- Buttons -->
-        <button id="complete-btn" class="btn w-100 py-3 daily-complete-btn mb-3">
-            <span class="daily-complete-text">Mark Day Complete</span>
-        </button>
-
-        <button id="resume-btn" class="btn w-100 py-3 daily-resume-btn mb-3">
-            <span class="daily-resume-text">Resume Reading</span>
-        </button>
-
-        <button id="journal-btn" class="btn w-100 py-3 daily-journal-btn mb-5">
-            <span class="daily-journal-text">Add Notes</span>
-        </button>
+        <p class="daily-text mt-2">
+            Your selection will automatically update this week's reading assignments.
+        </p>
     </div>
+    
+    <!-- This single element will hold whichever layout is active -->
+    <div id="secret-text" hidden></div>
+
+    <!-- This Week's Reading -->
+    <div class="daily-section mt-4">
+        <h2 class="daily-title">This Week's Reading (Week <span id="week-number"></span>)</h2>
+        <p class="daily-text">Old Testament Assignment: <span id="ot-reading"></span></p>
+        <p class="daily-text">New Testament Assignment: <span id="nt-reading"></span></p>
+    </div>
+
+    <!-- Operational Buttons -->
+    <button id="complete-btn" class="btn w-100 py-3 daily-complete-btn mb-3">
+        <span class="daily-complete-text">Mark Week Complete</span>
+    </button>
+
+    <button id="resume-btn" class="btn w-100 py-3 daily-resume-btn mb-3">
+        <span class="daily-resume-text">Resume Reading</span>
+    </button>
+
+    <button id="journal-btn" class="btn w-100 py-3 daily-journal-btn mb-5">
+        <span class="daily-journal-text">Add Daily Notes</span>
+    </button>
+</div>
 
     <!-- Core Dependencies (Updated Paths) -->
     <script src="../assets/js/sectional-plan.js"></script>
