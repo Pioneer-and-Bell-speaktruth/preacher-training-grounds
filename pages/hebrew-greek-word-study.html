@@ -33,9 +33,10 @@
         <h1 class="greek-header mb-2">Daily Original Word Study</h1>
         <p class="text-muted mb-4">Grow your vocabulary. Refresh the section to draw a completely new biblical term from the lexicons.</p>
         
-        <!-- Refresh Interactive Left-Aligned Buttons Panel Area -->
+        <!-- High-Contrast Left-Aligned Buttons Panel Area -->
         <div class="d-flex flex-wrap gap-2 mb-4" style="max-width: 600px;">
-            <button id="random-hebrew-btn" class="btn btn-outline-warning btn-lg text-start flex-grow-1 py-3 px-4 shadow-sm fw-bold">
+            <!-- Swapped to btn-warning for a high-contrast solid background visibility appearance -->
+            <button id="random-hebrew-btn" class="btn btn-warning btn-lg text-start text-dark flex-grow-1 py-3 px-4 shadow-sm fw-bold">
                 Draw New Hebrew Word (O.T.)
             </button>
             <button id="random-greek-btn" class="btn btn-outline-primary btn-lg text-start flex-grow-1 py-3 px-4 shadow-sm fw-bold">
@@ -72,22 +73,24 @@
         </div>
     </div>
     
-        <!-- Browser Node-Bridge Patch (Fixes the module is not defined error) -->
+          <!-- Browser Node-Bridge Patch (Fixes module errors and stabilizes data routing) -->
     <script>
-        // Setup an intelligent reactive bridge object
         window.module = {
             _exports: {},
             set exports(data) {
                 this._exports = data;
-                // If it's a huge dictionary, catch it dynamically based on the keys inside it
                 if (data && typeof data === 'object') {
-                    const firstKey = Object.keys(data)[0] || "";
-                    if (firstKey.startsWith('G') || firstKey === 'G1') {
+                    // Extract the first key name as a safe string
+                    const keys = Object.keys(data);
+                    const firstKey = keys.length > 0 ? String(keys[0]) : "";
+                    
+                    // Intelligent alphanumeric routing validation chain
+                    if (firstKey.toUpperCase().includes('G') || data["G1"] || data["G3056"]) {
                         window.strongsGreekDictionary = data;
-                    } else if (firstKey.startsWith('H') || firstKey === 'H1') {
+                    } else if (firstKey.toUpperCase().includes('H') || data["H1"] || data["H3056"]) {
                         window.strongsHebrewDictionary = data;
                     } else {
-                        // General fallback just in case keys are plain integers (e.g. 1, 2, 3)
+                        // Numeric fallback assignment mapping
                         if (!window.strongsHebrewDictionary) {
                             window.strongsHebrewDictionary = data;
                         } else {
@@ -100,11 +103,10 @@
                 return this._exports;
             }
         };
-        // Backwards compatibility assignment alias shortcuts for old script blocks
         window.exports = window.module.exports;
     </script>
 
-    <!-- Explicit dictionary file source references (Loads everything completely) -->
+    <!-- Explicit dictionary file source references -->
     <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
     <script src="../assets/js/strongs-greek-dictionary.js"></script>
 
@@ -125,14 +127,13 @@
             // DYNAMIC RANDOM ELEMENT LOGIC
             // -------------------------------------------------------------
             function getRandomWord(lang) {
-                // Double check if data fell directly into standard module storage or our reactive backup variables
                 let dict = lang === "greek" 
-                    ? (window.strongsGreekDictionary || window.module._exports) 
-                    : (window.strongsHebrewDictionary || window.module._exports);
+                    ? window.strongsGreekDictionary 
+                    : window.strongsHebrewDictionary;
 
-                // Ultimate data fail-safe: if the bridge missed it, look globally for anything named dictionary
+                // Secondary layout target validation scan
                 if (!dict || Object.keys(dict).length === 0) {
-                    dict = window.strongsGreekDictionary || window.strongsHebrewDictionary || window.greekDictionary || window.hebrewDictionary || null;
+                    dict = window.module._exports;
                 }
 
                 if (!dict || Object.keys(dict).length === 0) {
@@ -140,7 +141,6 @@
                     return;
                 }
 
-                // Isolate all property keys into a clean index array list
                 const keys = Object.keys(dict);
                 const randomKey = keys[Math.floor(Math.random() * keys.length)];
                 const entry = dict[randomKey];
@@ -151,13 +151,13 @@
             }
 
             function renderWordEntry(lang, fullKey, entry) {
-                // Clear out letter prefixes for display card layout badge formatting requirements
                 const numericId = fullKey.replace(/\D/g, "");
                 const prefix = lang === "greek" ? "G" : "H";
 
                 if (studyStrongs) studyStrongs.textContent = `${prefix}${numericId}`;
                 if (sectionTitle) sectionTitle.textContent = lang === "greek" ? "Greek Daily Word Study" : "Hebrew Daily Word Study";
                 
+                // Fallback loops to match variations between your file data schemas
                 if (studyWord) studyWord.textContent = entry.lemma || entry.word || "---";
                 
                 const translitData = entry.xlit || entry.transliteration || entry.translit || "";
@@ -166,7 +166,7 @@
                     studyTranslit.textContent = (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
                 }
                 
-                let kjvString = entry.kjv_def || entry.kjv_usage || "";
+                let kjvString = entry.kjv_def || entry.kjv_usage || entry.kjv || "";
                 if (kjvString.startsWith(":--")) {
                     kjvString = kjvString.replace(/^:--/, "").trim();
                 }
@@ -187,10 +187,10 @@
             if (hebrewBtn) hebrewBtn.addEventListener("click", () => getRandomWord("hebrew"));
             if (greekBtn) greekBtn.addEventListener("click", () => getRandomWord("greek"));
 
-            // AUTOMATIC INITIALIZATION: Wait for dictionary file processing streams to finalize
+            // AUTOMATIC INITIALIZATION: Delayed execution allows storage array mappings to lock down
             setTimeout(() => {
                 getRandomWord("greek");
-            }, 500);
+            }, 600);
         });
     </script>
 </body>
