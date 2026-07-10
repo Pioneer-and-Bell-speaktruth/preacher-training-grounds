@@ -73,39 +73,7 @@
         </div>
     </div>
     
-         <!-- Browser Node-Bridge Patch (Fixed Data Routing Paths) -->
-    <script>
-        window.module = {
-            _exports: {},
-            set exports(data) {
-                this._exports = data;
-                if (data && typeof data === 'object') {
-                    // Grab the very first object key string cleanly to isolate the file language profile
-                    const firstKey = Object.keys(data)[0] || "";
-                    
-                    // Look directly for letter prefixes inside the actual dictionary entry codes
-                    if (firstKey.startsWith('G') || data["G1"] || data["G3056"]) {
-                        window.strongsGreekDictionary = data;
-                    } else if (firstKey.startsWith('H') || data["H1"] || data["H2"]) {
-                        window.strongsHebrewDictionary = data;
-                    } else {
-                        // Numeric key index fallback logic assignment block
-                        if (!window.strongsHebrewDictionary) {
-                            window.strongsHebrewDictionary = data;
-                        } else {
-                            window.strongsGreekDictionary = data;
-                        }
-                    }
-                }
-            },
-            get exports() {
-                return this._exports;
-            }
-        };
-        window.exports = window.module.exports;
-    </script>
-
-    <!-- Explicit dictionary file source references -->
+      <!-- Explicit dictionary file source references (Loads your global variables directly) -->
     <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
     <script src="../assets/js/strongs-greek-dictionary.js"></script>
 
@@ -126,17 +94,13 @@
             // DYNAMIC RANDOM ELEMENT LOGIC
             // -------------------------------------------------------------
             function getRandomWord(lang) {
-                let dict = lang === "greek" 
+                // Read directly from your file's native global variables
+                const dict = lang === "greek" 
                     ? window.strongsGreekDictionary 
                     : window.strongsHebrewDictionary;
 
-                // Secondary template layout backup capture verification track
                 if (!dict || Object.keys(dict).length === 0) {
-                    dict = window.module._exports;
-                }
-
-                if (!dict || Object.keys(dict).length === 0) {
-                    alert(`Error: ${lang} dictionary data is empty or missing from memory variables.`);
+                    alert(`Error: ${lang} dictionary data is empty or missing. Ensure the file names match your assets directory.`);
                     return;
                 }
 
@@ -150,6 +114,7 @@
             }
 
             function renderWordEntry(lang, fullKey, entry) {
+                // Clear out letter prefixes for display formatting
                 const numericId = fullKey.replace(/\D/g, "");
                 const prefix = lang === "greek" ? "G" : "H";
 
@@ -157,19 +122,13 @@
                 if (sectionTitle) sectionTitle.textContent = lang === "greek" ? "Greek Daily Word Study" : "Hebrew Daily Word Study";
                 
                 // 1. Isolate the original lexical script word code
-                const rootWord = entry.lemma || entry.word || "---";
+                const rootWord = entry.lemma || "---";
                 
-                // ---------------------------------------------------------
-                // NEW: PARSE ENGLISH TRANSLATION KEYWORD FROM THE GLOSS DATA
-                // ---------------------------------------------------------
-                // Open Scriptures schemas hold isolated English words inside .trans, .english, or .meaning properties
-                let englishTranslation = entry.trans || entry.english || entry.meaning || "";
-                
-                // Fallback: If no single word translation field exists, extract it directly from the primary meaning summary
-                if (!englishTranslation) {
-                    const fullDef = entry.strongs_def || entry.definition || "";
-                    // Grabs the first prominent words before common punctuation dividers to find the raw root meaning
-                    const cleanWords = fullDef.split(/[;.,]/)[0] || "";
+                // 2. Extract English Translation Keyword from the definition string
+                let englishTranslation = "";
+                if (entry.strongs_def) {
+                    // Pull the very first words before the first comma/semicolon for a clean summary
+                    const cleanWords = entry.strongs_def.split(/[;.,]/)[0];
                     englishTranslation = cleanWords.replace(/[^a-zA-Z\s]/g, "").trim();
                 }
 
@@ -182,28 +141,27 @@
                     }
                 }
                 
-                // 2. Map Transliteration metrics
-                const translitData = entry.xlit || entry.transliteration || entry.translit || "";
-                const pronData = entry.pron || entry.pronunciation || "";
+                // 3. Map Transliteration and Pronunciation metrics
+                // Hebrew schema uses 'xlit' and 'pron'. Greek schema uses 'translit'.
+                const translitData = entry.translit || entry.xlit || "";
+                const pronData = entry.pron || "";
                 if (studyTranslit) {
                     studyTranslit.textContent = (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
                 }
                 
-                // 3. Map KJV Translation Usage Space (Cleans out formatting character markers)
-                let kjvString = entry.kjv_def || entry.kjv_usage || entry.kjv || "";
-                if (kjvString.startsWith(":--")) {
-                    kjvString = kjvString.replace(/^:--/, "").trim();
+                // 4. Map KJV Translation Usage Space
+                if (studyKjv) {
+                    studyKjv.textContent = entry.kjv_def || "No specific isolated KJV translations cataloged.";
                 }
-                if (studyKjv) studyKjv.textContent = kjvString || "No specific isolated KJV translations cataloged.";
 
-                // 4. Map Lexicon Definition & Usage (CRITICAL MAPPING FIX: Checks for 'strongs_def' first [1])
+                // 5. Map Lexicon Definition & Usage
                 if (studyMeaning) {
-                    studyMeaning.textContent = entry.strongs_def || entry.definition || entry.meaning || entry.description || "No full definition recorded.";
+                    studyMeaning.textContent = entry.strongs_def || "No full definition recorded.";
                 }
                 
-                // 5. Map Derivation / Origin Footnotes (CRITICAL MAPPING FIX: Checks for 'derivation' first [1])
+                // 6. Map Derivation / Origin Footnotes
                 if (studyNotes) {
-                    studyNotes.textContent = entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
+                    studyNotes.textContent = entry.derivation || "No derivation footnotes recorded.";
                 }
             }
 
@@ -216,7 +174,7 @@
             // AUTOMATIC INITIALIZATION: Delayed launch allows dictionary processing streams to completely stabilize
             setTimeout(() => {
                 getRandomWord("greek");
-            }, 600);
+            }, 500);
         });
     </script>
 </body>
