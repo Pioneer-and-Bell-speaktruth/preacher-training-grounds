@@ -170,3 +170,4 @@ const chronologicalPlanHTML = `
 
 // DOM Injection Logic Example (Uncomment to use)
 // document.getElementById('secret-text').innerHTML = chronologicalPlanHTML;
+window.chronologicalPlanHTML = chronologicalPlanHTML;
