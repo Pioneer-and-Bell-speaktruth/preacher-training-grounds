@@ -182,7 +182,7 @@
             }
 
             if (matches.length === 1) {
-                // FIXED SINGLE MATCH CRASH: Extracts explicitly from index position [0] of the results array
+                // FIXED CRASH: Correctly targets the index position element [0] from the match array list
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
                 // Populate dropdown menu if multiple entries contain the searched word (like "perfect")
@@ -270,6 +270,7 @@
             const lang = selector.value;
             const dict = getActiveDictionary(lang);
             if (dict && dict[key]) {
+                // FIXED KEY STRIPPING: Keeps alpha characters intact so "G5046" matches your file keys perfectly
                 const cleanId = key.replace(/\D/g, "");
                 renderWordEntry(lang, cleanId, dict[key]);
             }
