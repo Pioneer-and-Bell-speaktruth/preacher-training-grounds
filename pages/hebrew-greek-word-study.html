@@ -3,30 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Bible Word Study</title>
-    
-    <!-- Load global.html (Bootstrap Darkly + Navbar + Helpers) -->
-    <script>
-    fetch('../assets/global.html')
-        .then(r => {
-            if(!r.ok) throw new Error("Global layout asset not found");
-            return r.text();
-        })
-        .then(html => {
-            const template = document.createElement("div");
-            template.innerHTML = html;
-            
-            template.querySelectorAll("link, script").forEach(node => {
-                const clone = node.cloneNode(true);
-                if (clone.tagName === 'SCRIPT' && clone.src.includes('.css')) return;
-                document.head.appendChild(clone);
-            });
+    <title>Hebrew/Greek Word Study</title>
 
-            const nav = template.querySelector("nav");
-            if (nav) document.body.prepend(nav);
-        })
-        .catch(err => console.warn("Navbar loading bypassed:", err));
-    </script>
+    <!-- NOTE THE "../" AT THE START: This steps out of the pages/ folder to find your CSS styles --> 
+    <link rel="stylesheet" href="/preacher-training-grounds/assets/dist/css/bootstrap(darkly).min.css"> 
+</head>
+<body class="bg-dark text-light">
+
+    <!-- Global Navbar (Pasted directly so it never fails to load on mobile) --> 
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4"> 
+      <div class="container"> 
+        <a class="navbar-brand" href="/preacher-training-grounds/">Home</a> 
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
+          <span class="navbar-toggler-icon"></span> 
+        </button> 
+        
+        <div class="collapse navbar-collapse" id="navbarNav"> 
+          <ul class="navbar-nav ms-auto"> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/scripture-encouragement.html">Scripture Encouragement</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/daily-bible-study.html">Daily Bible Study</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/sermon-types.html">Sermon Types</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/sermon-builder.html">Sermon Builder</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/series-planner.html">Series Planner</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/training-modules.html">Training Modules</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/wisdom-library.html">Wisdom Library</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/about.html">About</a></li> 
+          </ul> 
+        </div> 
+      </div> 
+    </nav>
 </head>
 <body class="bg-light">
     <div class="container py-4 greek-container">
