@@ -78,44 +78,41 @@
         window.sectionalPlanHTML = window.sectionalPlanHTML || "<p>Sectional plan layout content loading...</p>";
         window.chronologicalPlanHTML = window.chronologicalPlanHTML || "<p>Chronological plan layout content loading...</p>";
 
+                // -----------------------------
+        // Load Weekly Reading Plan Data
         // -----------------------------
-        // Load reading plan data
-        // -----------------------------
-        // Default to "select" instead of "sectional" if no selection exists
         const selectedPlan = localStorage.getItem("selectedPlan") || "select";
+        
+        // Track by currentReadingWeek instead of currentReadingDay (1 to 52)
+        const currentWeek = parseInt(localStorage.getItem("currentReadingWeek")) || 1;
+        document.getElementById("week-number").textContent = currentWeek;
 
-        const currentDay = parseInt(localStorage.getItem("currentReadingDay")) || 1;
-        document.getElementById("today-number").textContent = currentDay;
-
-        // Target all standard structural page view containers
         const targetContainer = document.getElementById("secret-text");
-        const todayReadingSection = document.querySelector(".daily-section.mt-4");
+        const weeklyReadingSection = document.querySelector(".daily-section.mt-4");
 
         // -----------------------------
-        // Check selection state
+        // Check Selection State
         // -----------------------------
         if (selectedPlan === "select") {
-            // Keep content elements hidden if no plan is chosen yet
             if (targetContainer) targetContainer.hidden = true;
-            if (todayReadingSection) todayReadingSection.hidden = true;
+            if (weeklyReadingSection) weeklyReadingSection.hidden = true;
             
             document.getElementById("ot-reading").textContent = "Select a plan first";
             document.getElementById("nt-reading").textContent = "Select a plan first";
         } else {
-            // A valid reading plan is selected -> reveal standard sections
-            if (todayReadingSection) todayReadingSection.hidden = false;
+            if (weeklyReadingSection) weeklyReadingSection.hidden = false;
 
             const readingPlan =
                 selectedPlan === "chronological"
                     ? window.chronologicalPlan
                     : window.sectionalPlan;
 
-            const todayPlan = readingPlan[currentDay - 1] || readingPlan;
+            // Grabs the current week offset object index (0 to 51)
+            const weekPlan = readingPlan[currentWeek - 1] || { ot: ["N/A"], nt: ["N/A"] };
 
-            document.getElementById("ot-reading").textContent = todayPlan.ot ? todayPlan.ot.join(", ") : "N/A";
-            document.getElementById("nt-reading").textContent = todayPlan.nt ? todayPlan.nt.join(", ") : "N/A";
+            document.getElementById("ot-reading").textContent = weekPlan.ot ? weekPlan.ot.join(", ") : "N/A";
+            document.getElementById("nt-reading").textContent = weekPlan.nt ? weekPlan.nt.join(", ") : "N/A";
 
-            // Inject and unhide the long-form reference layout content
             if (targetContainer) {
                 targetContainer.hidden = false; 
                 targetContainer.innerHTML = 
@@ -133,10 +130,11 @@
                 alert("Please select a reading plan first!");
                 return;
             }
-            const progress = JSON.parse(localStorage.getItem("readingProgress")) || {};
-            progress[currentDay] = true;
-            localStorage.setItem("readingProgress", JSON.stringify(progress));
-            alert("Day marked complete.");
+            // Track progress by week IDs
+            const progress = JSON.parse(localStorage.getItem("weeklyReadingProgress")) || {};
+            progress[currentWeek] = true;
+            localStorage.setItem("weeklyReadingProgress", JSON.stringify(progress));
+            alert(`Week ${currentWeek} marked complete.`);
         });
 
         document.getElementById("resume-btn").addEventListener("click", () => {
@@ -144,7 +142,9 @@
         });
 
         document.getElementById("journal-btn").addEventListener("click", () => {
-            sessionStorage.setItem("journalDay", currentDay);
+            // Keep journal instances explicitly dynamic (can track multiple notes per week)
+            const exactTimestamp = new Date().toLocaleDateString();
+            sessionStorage.setItem("journalDay", `Week ${currentWeek} - ${exactTimestamp}`);
             window.location.href = "journal.html";
         });
 
