@@ -8698,6 +8698,4 @@ var strongsHebrewDictionary = {"H1":{"lemma":"אָב","xlit":"ʼâb","pron":"awb
 "H8673":{"lemma":"תִּשְׁעִים","xlit":"tishʻîym","pron":"tish-eem'","derivation":"multiple from H8672 (תֵּשַׁע);","strongs_def":"ninety","kjv_def":"ninety."},
 "H8674":{"lemma":"תַּתְּנַי","xlit":"Tattᵉnay","pron":"tat-ten-ah'-ee","derivation":"of foreign derivation;","strongs_def":"Tattenai, a Persian","kjv_def":"Tatnai."}
 };
-
-module.exports = strongsHebrewDictionary;
 window.strongsHebrewDictionary = strongsHebrewDictionary;
