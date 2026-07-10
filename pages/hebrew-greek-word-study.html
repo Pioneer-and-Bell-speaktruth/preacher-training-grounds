@@ -72,22 +72,41 @@
         </div>
     </div>
     
-    <!-- Browser Node-Bridge Patch (Fixes the module is not defined error) -->
+        <!-- Browser Node-Bridge Patch (Fixes the module is not defined error) -->
     <script>
-        window.module = { exports: {} };
+        // Setup an intelligent reactive bridge object
+        window.module = {
+            _exports: {},
+            set exports(data) {
+                this._exports = data;
+                // If it's a huge dictionary, catch it dynamically based on the keys inside it
+                if (data && typeof data === 'object') {
+                    const firstKey = Object.keys(data)[0] || "";
+                    if (firstKey.startsWith('G') || firstKey === 'G1') {
+                        window.strongsGreekDictionary = data;
+                    } else if (firstKey.startsWith('H') || firstKey === 'H1') {
+                        window.strongsHebrewDictionary = data;
+                    } else {
+                        // General fallback just in case keys are plain integers (e.g. 1, 2, 3)
+                        if (!window.strongsHebrewDictionary) {
+                            window.strongsHebrewDictionary = data;
+                        } else {
+                            window.strongsGreekDictionary = data;
+                        }
+                    }
+                }
+            },
+            get exports() {
+                return this._exports;
+            }
+        };
+        // Backwards compatibility assignment alias shortcuts for old script blocks
+        window.exports = window.module.exports;
     </script>
 
-    <!-- Explicit dictionary file source references -->
+    <!-- Explicit dictionary file source references (Loads everything completely) -->
     <script src="../assets/js/strongs-hebrew-dictionary.js"></script>
-    <script>
-        window.strongsHebrewDictionary = window.module.exports;
-        window.module.exports = {};
-    </script>
-
     <script src="../assets/js/strongs-greek-dictionary.js"></script>
-    <script>
-        window.strongsGreekDictionary = window.module.exports;
-    </script>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -106,9 +125,15 @@
             // DYNAMIC RANDOM ELEMENT LOGIC
             // -------------------------------------------------------------
             function getRandomWord(lang) {
-                const dict = lang === "greek" 
-                    ? window.strongsGreekDictionary 
-                    : window.strongsHebrewDictionary;
+                // Double check if data fell directly into standard module storage or our reactive backup variables
+                let dict = lang === "greek" 
+                    ? (window.strongsGreekDictionary || window.module._exports) 
+                    : (window.strongsHebrewDictionary || window.module._exports);
+
+                // Ultimate data fail-safe: if the bridge missed it, look globally for anything named dictionary
+                if (!dict || Object.keys(dict).length === 0) {
+                    dict = window.strongsGreekDictionary || window.strongsHebrewDictionary || window.greekDictionary || window.hebrewDictionary || null;
+                }
 
                 if (!dict || Object.keys(dict).length === 0) {
                     alert(`Error: ${lang} dictionary data is empty or missing from memory variables.`);
@@ -162,10 +187,10 @@
             if (hebrewBtn) hebrewBtn.addEventListener("click", () => getRandomWord("hebrew"));
             if (greekBtn) greekBtn.addEventListener("click", () => getRandomWord("greek"));
 
-            // AUTOMATIC INITIALIZATION: Automatically rolls a random Greek word as default view when page launches
+            // AUTOMATIC INITIALIZATION: Wait for dictionary file processing streams to finalize
             setTimeout(() => {
                 getRandomWord("greek");
-            }, 300);
+            }, 500);
         });
     </script>
 </body>
