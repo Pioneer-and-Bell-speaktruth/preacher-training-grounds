@@ -8700,3 +8700,4 @@ var strongsHebrewDictionary = {"H1":{"lemma":"אָב","xlit":"ʼâb","pron":"awb
 };
 
 module.exports = strongsHebrewDictionary;
+window.strongsHebrewDictionary = strongsHebrewDictionary;
