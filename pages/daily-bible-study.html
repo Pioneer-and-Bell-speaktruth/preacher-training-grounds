@@ -44,29 +44,27 @@
     <!-- This single element will hold whichever layout is active -->
     <div id="secret-text" hidden></div>
 
-        <!-- Interactive Progress Tracker Spreadsheet Container -->
-    <div id="tracker-panel" class="daily-section mt-4" hidden>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="daily-title mb-0">Reading Tracker Spreadsheet</h2>
-            <button id="reset-tracker-btn" class="btn btn-sm btn-outline-danger">Reset All Weeks</button>
-        </div>
-        
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle text-center">
-                <thead class="table-primary">
-                    <tr>
-                        <th style="width: 10%;">Status</th>
-                        <th style="width: 15%;">Week No.</th>
-                        <th style="width: 40%;">Old Testament Assignment</th>
-                        <th style="width: 35%;">New Testament Assignment</th>
-                    </tr>
-                </thead>
-                <tbody id="spreadsheet-rows">
-                    <!-- Dynamically populated via script framework matrix -->
-                </tbody>
-            </table>
-        </div>
+<!-- The empty spreadsheet frame template required by the script -->
+<div id="tracker-panel" class="daily-section mt-4" hidden>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="daily-title mb-0">Reading Tracker Spreadsheet</h2>
+        <button id="reset-tracker-btn" class="btn btn-sm btn-outline-danger">Reset All Weeks</button>
     </div>
+    
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-primary">
+                <tr>
+                    <th style="width: 10%;">Status</th>
+                    <th style="width: 15%;">Week No.</th>
+                    <th style="width: 75%;">Weekly Assignment</th>
+                </tr>
+            </thead>
+            <!-- The JavaScript hooks into this id and loops out all 52 rows automatically -->
+            <tbody id="spreadsheet-rows"></tbody>
+        </table>
+    </div>
+</div>
 
 <!-- This Week's Reading -->
 <div class="daily-section mt-4">
