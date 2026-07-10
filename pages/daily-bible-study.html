@@ -41,86 +41,82 @@
         </p>
     </div>
     
-    <!-- This single element will hold whichever layout is active -->
-    <div id="secret-text" hidden></div>
+    <!-- This week's active details container description text layout -->
+    <div id="secret-text" class="mb-4" hidden></div>
 
-<!-- The empty spreadsheet frame template required by the script -->
-<div id="tracker-panel" class="daily-section mt-4" hidden>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="daily-title mb-0">Reading Tracker Spreadsheet</h2>
-        <button id="reset-tracker-btn" class="btn btn-sm btn-outline-danger">Reset All Weeks</button>
+    <!-- Reordered Component Element Node: Pushed This Week's Reading safely to the top header focus tier -->
+    <div class="daily-section mt-4 mb-4">
+        <h2 class="daily-title">This Week's Reading (Week <span id="week-number"></span>)</h2>
+        <p class="daily-text fs-4 fw-bold text-primary mb-0"><span id="weekly-assignment"></span></p>
     </div>
-    
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle text-center">
-            <thead class="table-primary">
-                <tr>
-                    <th style="width: 10%;">Status</th>
-                    <th style="width: 15%;">Week No.</th>
-                    <th style="width: 75%;">Weekly Assignment</th>
-                </tr>
-            </thead>
-            <!-- The JavaScript hooks into this id and loops out all 52 rows automatically -->
-            <tbody id="spreadsheet-rows"></tbody>
-        </table>
+
+    <!-- Operational Interactive Action Buttons Panel Area Group -->
+    <div class="d-flex flex-column gap-3 mb-4">
+        <button id="complete-btn" class="btn btn-success btn-lg py-3 w-100">
+            <span class="fw-bold">Mark This Week Complete</span>
+        </button>
+
+        <button id="resume-btn" class="btn btn-secondary btn-lg py-3 w-100">
+            <span>Refresh Spreadsheet View</span>
+        </button>
+
+        <button id="journal-btn" class="btn btn-info btn-lg py-3 w-100">
+            <span>Add Weekly Study Notes</span>
+        </button>
+    </div>
+
+    <!-- The empty spreadsheet frame template populated smoothly by functional JavaScript array iteration loops -->
+    <div id="tracker-panel" class="daily-section mt-4 mb-5" hidden>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="daily-title mb-0">Reading Tracker Spreadsheet</h2>
+            <button id="reset-tracker-btn" class="btn btn-sm btn-outline-danger">Reset All Weeks</button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th style="width: 10%;">Status</th>
+                        <th style="width: 15%;">Week No.</th>
+                        <th style="width: 75%;">Weekly Assignment</th>
+                    </tr>
+                </thead>
+                <tbody id="spreadsheet-rows"></tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<!-- This Week's Reading -->
-<div class="daily-section mt-4">
-    <h2 class="daily-title">This Week's Reading (Week <span id="week-number"></span>)</h2>
-    <p class="daily-text fs-4 fw-bold text-primary mb-0"><span id="weekly-assignment"></span></p>
-</div>
-
-<!-- Updated Operational Action Buttons -->
-<div class="d-flex flex-column gap-3 mb-5">
-    <button id="complete-btn" class="btn btn-success btn-lg py-3 w-100">
-        <span class="fw-bold">Mark This Week Complete</span>
-    </button>
-
-    <button id="resume-btn" class="btn btn-secondary btn-lg py-3 w-100">
-        <span>Refresh Spreadsheet View</span>
-    </button>
-
-    <button id="journal-btn" class="btn btn-info btn-lg py-3 w-100">
-        <span>Add Weekly Study Notes</span>
-    </button>
-</div>
-
-       <!-- Core Plan Layout Dependencies -->
+    <!-- Core Plan Layout Source Array Data Dependencies -->
     <script src="../assets/js/sectional-plan.js"></script>
     <script src="../assets/js/chronological-plan.js"></script>
-
     <script>
         // -----------------------------
         // Core Weekly App Variables
         // -----------------------------
         const selectedPlan = localStorage.getItem("selectedPlan") || "select";
         
-        // Isolate data storage keys per plan track
         const storageKey = selectedPlan === "chronological" ? "chronologicalProgress" : "sectionalProgress";
         const progressMatrix = JSON.parse(localStorage.getItem(storageKey)) || {};
 
         // -------------------------------------------------------------
-        // INTELLIGENT AUTO-WEEK FINDER (Fixes the missing Week 1 Bug)
+        // INTELLIGENT AUTO-WEEK FINDER
         // -------------------------------------------------------------
-        let currentWeek = 1; // Default to Week 1
+        let currentWeek = 1; 
         
         if (selectedPlan !== "select") {
-            // Scan from Week 1 to 52 to find the first unchecked week index
             for (let w = 1; w <= 52; w++) {
                 if (!progressMatrix[w]) {
                     currentWeek = w;
                     break;
                 }
             }
-            // Save the auto-calculated active focus week back into browser memory
             localStorage.setItem("currentReadingWeek", currentWeek);
         }
 
-        // Element target nodes
+        // Element target node tracking variables
         const targetContainer = document.getElementById("secret-text");
-        const weeklyReadingSection = document.querySelector(".daily-section.mt-4");
+        const weeklyReadingSection = document.getElementById("weekly-assignment") ? document.getElementById("weekly-assignment").closest('.daily-section') : null;
         const trackerPanel = document.getElementById("tracker-panel");
         const spreadsheetRows = document.getElementById("spreadsheet-rows");
 
@@ -138,22 +134,18 @@
             if (weeklyReadingSection) weeklyReadingSection.hidden = false;
             if (trackerPanel) trackerPanel.hidden = false;
 
-            // Route dynamic external file arrays safely 
             const readingPlan = selectedPlan === "chronological" 
                 ? (window.chronologicalPlan || []) 
                 : (window.sectionalPlan || []);
 
-            // Render current highlighted header card row data
             const weekPlan = readingPlan[currentWeek - 1] || { ot: [], nt: [] };
             
             const weekNumberNode = document.getElementById("week-number");
             if (weekNumberNode) weekNumberNode.textContent = currentWeek;
 
-            // Extract values safely, filtering out empty fields or placeholders
             const otText = (weekPlan.ot && weekPlan.ot.length > 0 && weekPlan.ot[0] !== "N/A") ? weekPlan.ot.join(", ") : "";
             const ntText = (weekPlan.nt && weekPlan.nt.length > 0 && weekPlan.nt[0] !== "N/A") ? weekPlan.nt.join(", ") : "";
 
-            // Dynamically combine text strings based on what data actually exists for this week
             let combinedAssignment = "";
             if (otText && ntText) {
                 combinedAssignment = `${otText} & ${ntText}`;
@@ -165,11 +157,9 @@
                 combinedAssignment = "No assignments recorded for this week";
             }
 
-            // Push the clean, tailored string directly to the single display node
             const mainAssignmentNode = document.getElementById("weekly-assignment");
             if (mainAssignmentNode) mainAssignmentNode.textContent = combinedAssignment;
 
-            // Inject the dynamic HTML summary descriptions
             if (targetContainer) {
                 targetContainer.hidden = false; 
                 targetContainer.innerHTML = selectedPlan === "chronological"
@@ -177,25 +167,22 @@
                     : (window.sectionalPlanHTML || "<p>Loading layout...</p>");
             }
 
-            // Render Spreadsheet Rows automatically
             buildSpreadsheetTracker(readingPlan, selectedPlan);
         }
 
-        // -----------------------------
-        // Dynamic Spreadsheet Generator
-        // -----------------------------
+        // -------------------------------------------------------------
+        // DYNAMIC SPREADSHEET GENERATOR (Completely Restored and Closed)
+        // -------------------------------------------------------------
         function buildSpreadsheetTracker(planData, planType) {
             if (!spreadsheetRows) return;
-            spreadsheetRows.innerHTML = ""; // Clear old rendering fragments
+            spreadsheetRows.innerHTML = ""; 
 
             planData.forEach((weekData, index) => {
                 const weekNum = index + 1;
                 const isChecked = progressMatrix[weekNum] ? "checked" : "";
                 
-                // Highlight row background if this matches the user's calculated focus week
                 const currentWeekHighlight = (weekNum === currentWeek) ? "table-warning text-dark fw-bold" : "";
 
-                // Combine row strings for the table view
                 const otRowText = (weekData.ot && weekData.ot.length > 0 && weekData.ot[0] !== "N/A") ? weekData.ot.join(", ") : "";
                 const ntRowText = (weekData.nt && weekData.nt.length > 0 && weekData.nt[0] !== "N/A") ? weekData.nt.join(", ") : "";
                 let rowAssignment = otRowText || ntRowText || "N/A";
@@ -205,7 +192,7 @@
                     <tr class="${currentWeekHighlight}">
                         <td>
                             <input type="checkbox" class="form-check-input tracker-checkbox" 
-                                   data-week="${weekNum}" ${isChecked} style="transform: scale(1.3);">
+                                   data-week="${weekNum}" ${isChecked} style="transform: scale(1.3); cursor: pointer;">
                         </td>
                         <td>Week ${weekNum}</td>
                         <td class="text-start">${rowAssignment}</td>
@@ -214,17 +201,14 @@
                 spreadsheetRows.insertAdjacentHTML("beforeend", rowHTML);
             });
 
-            // Bind Event Listeners to checkboxes for live reactive local updates
             document.querySelectorAll(".tracker-checkbox").forEach(box => {
                 box.addEventListener("change", (e) => {
                     const targetedWeek = e.target.dataset.week;
                     const liveProgress = JSON.parse(localStorage.getItem(storageKey)) || {};
                     
-                    // Assign explicit true/false values based on checkbox state
                     liveProgress[targetedWeek] = e.target.checked;
                     localStorage.setItem(storageKey, JSON.stringify(liveProgress));
 
-                    // Reload page instantly to let the Auto-Week Finder recalc your progress focus
                     window.location.reload();
                 });
             });
@@ -262,13 +246,12 @@
             window.location.href = "journal.html";
         });
 
-        // Dropdown selection hook configuration
         const planSelector = document.getElementById("plan-selector");
         if (planSelector) {
             planSelector.value = selectedPlan;
             planSelector.addEventListener("change", (e) => {
                 localStorage.setItem("selectedPlan", e.target.value);
-                localStorage.removeItem("currentReadingWeek"); // Clear cache step so it recalculates
+                localStorage.removeItem("currentReadingWeek"); 
                 window.location.reload();
             });
         }
