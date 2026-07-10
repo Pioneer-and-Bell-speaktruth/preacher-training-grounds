@@ -2,18 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Enforces mobile phone screen scaling -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preacher Training Grounds</title>
 
-    <!-- Native stylesheet load so pages don't flicker white while loading -->
-    <link rel="stylesheet" href="/preacher-training-grounds/assets/dist/css/bootstrap(darkly).min.css">
+    <!-- Bootswatch Darkly Theme Stylesheet --> 
+    <link rel="stylesheet" href="/preacher-training-grounds/assets/dist/css/bootstrap(darkly).min.css"> 
 </head>
-
 <body class="bg-dark text-light">
 
-    <!-- Container for dynamic navbar injection -->
-    <div id="global-nav-placeholder"></div>
+    <!-- Global Navbar (Built right into the page so it can never fail to load) --> 
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4"> 
+      <div class="container"> 
+        <a class="navbar-brand" href="/preacher-training-grounds/">Home</a> 
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"> 
+          <span class="navbar-toggler-icon"></span> 
+        </button> 
+        
+        <div class="collapse navbar-collapse" id="navbarNav"> 
+          <ul class="navbar-nav ms-auto"> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/scripture-encouragement.html">Scripture Encouragement</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/daily-bible-study.html">Daily Bible Study</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/sermon-types.html">Sermon Types</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/sermon-builder.html">Sermon Builder</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/series-planner.html">Series Planner</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/training-modules.html">Training Modules</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/wisdom-library.html">Wisdom Library</a></li> 
+            <li class="nav-item"><a class="nav-link" href="/preacher-training-grounds/pages/about.html">About</a></li> 
+          </ul> 
+        </div> 
+      </div> 
+    </nav>
 
     <div class="container mt-4">
         <!-- Intro Section -->
@@ -38,26 +57,8 @@
         </a>
     </div>
 
-    <!-- 1. Load the Bootstrap JS engine directly from the official CDN link -->
+    <!-- Official Bootstrap 5 JavaScript Bundle (Enables the 3-line mobile menu) -->
     <script src="https://jsdelivr.net" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
 
-    <!-- 2. Secure Fetch Script: Pulls the layout, drops it in, then explicitly activates the mobile menu -->
-    <script>
-    fetch("assets/global.html")
-      .then(response => response.text())
-      .then(htmlContent => {
-          const placeholder = document.getElementById("global-nav-placeholder");
-          placeholder.innerHTML = htmlContent;
-
-          // CRITICAL FIX: Manually wake up the mobile menu toggle once the HTML has hit the DOM
-          const togglerButton = placeholder.querySelector('.navbar-toggler');
-          if (togglerButton) {
-              new bootstrap.Collapse(placeholder.querySelector('.navbar-collapse'), {
-                  toggle: false
-              });
-          }
-      })
-      .catch(error => console.error("Error loading navbar components:", error));
-    </script>
 </body>
 </html>
