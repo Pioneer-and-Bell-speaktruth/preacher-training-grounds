@@ -96,7 +96,7 @@
     </script>
 
     <script>
-        const selector = document.getElementById("language-selector");
+                const selector = document.getElementById("language-selector");
         const strongsInput = document.getElementById("strongs-input");
         const searchBtn = document.getElementById("search-btn");
         const resultsContainer = document.getElementById("results-selector-container");
@@ -176,6 +176,7 @@
             }
 
             if (matches.length === 1) {
+                // FIXED CRASH: Grabs the data directly out of the first array element index [0]
                 renderWordEntry(lang, matches[0].id, matches[0].data);
             } else {
                 // Populate dropdown menu if multiple entries contain the searched word
@@ -186,8 +187,9 @@
                 resultsSelector.innerHTML = `<option value="">-- Choose From ${matches.length} Entries --</option>`;
                 
                 matches.forEach(match => {
-                    const wordLabel = match.data.word || match.data.lemma || "Word";
-                    const shortMeaning = match.data.definition || match.data.meaning || "";
+                    // Pull Open Scriptures standard keys: lemma/word and strongs_def/kjv_def/definition
+                    const wordLabel = match.data.lemma || match.data.word || "Word";
+                    const shortMeaning = match.data.strongs_def || match.data.definition || match.data.meaning || "";
                     const trimMeaning = shortMeaning.length > 50 ? shortMeaning.substring(0, 50) + "..." : shortMeaning;
                     
                     const option = document.createElement("option");
@@ -214,11 +216,11 @@
             document.getElementById("study-translit").textContent = 
                 (translitData && pronData) ? `${translitData} (${pronData})` : (translitData || pronData || "");
             
-            // 3. Map Lexicon Definition & KJV Usage (CRITICAL FIX: Checks for 'strongs_def' first)
+            // 3. Map Lexicon Definition & KJV Usage (Checks for 'strongs_def' first)
             document.getElementById("study-meaning").textContent = 
                 entry.strongs_def || entry.definition || entry.meaning || entry.description || "No definition parsed.";
             
-            // 4. Map Derivation / Origin Etymology (CRITICAL FIX: Checks for 'derivation' first)
+            // 4. Map Derivation / Origin Etymology (Checks for 'derivation' first)
             document.getElementById("study-notes").textContent = 
                 entry.derivation || entry.etymology || entry.origin || "No derivation footnotes recorded.";
             
@@ -232,6 +234,7 @@
             document.getElementById("study-meaning").textContent = "Select an entry from the dropdown above to display details.";
             document.getElementById("study-notes").textContent = "---";
         }
+
         // -----------------------------
         // Event Listeners
         // -----------------------------
@@ -240,17 +243,17 @@
         strongsInput.addEventListener("keypress", (e) => {
             if (e.key === "Enter") performSearch();
         });
-        
+
         selector.addEventListener("change", (e) => {
             localStorage.setItem("studyLanguage", e.target.value);
             resultsContainer.style.display = "none";
             clearDisplayFields();
         });
-        
+
         resultsSelector.addEventListener("change", (e) => {
             const key = e.target.value;
             if (!key) return;
-            
+
             const lang = selector.value;
             const dict = getActiveDictionary(lang);
             if (dict && dict[key]) {
