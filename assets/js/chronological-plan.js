@@ -125,7 +125,7 @@ const chronologicalPlanHTML = `
 <p>  - Prophet: Haggai</p>
 <p>- Week 36:</p>
 <p>  - Ezra 7–10</p>
-<p>  - Prophet: Zecharia</p>
+<p>  - Prophet: Zechariah</p>
 <p>- Week 37:</p>
 <p>  - Nehemiah</p>
 <p>  - Psalm 85, Psalm 126</p>
